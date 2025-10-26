@@ -1,0 +1,5 @@
+/my-app
+/db/sqlc/
+.vscode/
+hurl_7.0.0_amd64.deb
+

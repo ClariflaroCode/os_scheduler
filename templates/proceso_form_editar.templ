@@ -1,0 +1,29 @@
+package components
+templ MostrarFormulario(nombre String, prioridad Integer, burst_time Integer, arrival_time Integer ) {
+
+    <section>
+
+        <form action="/api/PUT/proceso/{id}">
+            <fieldset>
+                <legend>Creando un proceso nuevo</legend>
+
+                <label for="nombre">Nombre</label>
+                <input name="nombre" id="nombre"type="text" placeholder="Ingrese el nombre del proceso" value="{"nombre"}">
+
+                <label for="prioridad">Prioridad</label>
+                <input type="number" name="prioridad" id="prioridad" placeholder="Ingrese la prioridad del proceso" value="{"prioridad"}">
+
+                <label for="burst_time">Burst Time</label>
+                <input type="number" name="burst_time" id="burst_time" placeholder="Ingrese el burst time del proceso" value="{burst_time}" required>
+
+                <label for="arrival_time">Arrival time</label>
+                <input type="number" name="arrival_time" id="arrival_time" placeholder="Ingrese el arrival time del proceso" value="{arrival_time}" required>
+
+
+                <button type="submit">Enviar</button>
+            </fieldset>
+        </form>
+    </section>
+    
+}
+
