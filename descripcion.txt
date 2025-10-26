@@ -1,0 +1,45 @@
+INTRODUCCIÓN
+
+Este proyecto tiene por objetivo facilitar el aprendizaje de algoritmos de planificación de procesos en el sistema operativo a través de un sitio web que permita la visualización, creación y seguimiento de procesos creados. 
+Se plantea la opción de elegir el algoritmo de planificación a usar y pasarle parámetros de ser requerido para su procesamiento. 
+También para poder hacer registros de las diferentes ejecuciones y poder comparar se prevee la posibilidad de guardar las simulaciones, con la posibilidad de extraer de ellas en futuras extensiones estadísticas para que el alumno analice. 
+
+
+DISEÑO DEL PROYECTO
+
+Base de datos
+Para la creación de la base de datos se diseñaron las siguientes tablas:
+
+Proceso(id, nombre, prioridad, burst time, arrival time, orden_visual, estado, tiempo_inicio, tiempo_final, turnaround, waiting time, id_simulacion)
+
+Simulacion(id, nombre, process time, context switches, quantum, algoritmo)
+
+
+Posibles extensiones del proyecto que se desconoce si se realizaran durante el transcurso de la materia pero se pensaron en el caso de tener que almacenar usuarios y que se vean temas de autenticacion en el curso. Un usuario tiene de 0 a n simulaciones y la tabla simulacion cambiaría a:
+Simulacion(id, nombre, process time, context switches, quantum, algoritmo, id_usuario)
+
+Y se agregaría la tabla usuario:
+Usuario(id, nombre, email, contrasenia)
+
+
+
+ESTRUCTURA HTML:
+El sitio web contará con una barra de navegación superior que contendrá las siguientes secciones:
+    - Ver procesos -> mostrará un listado de los procesos creados por el usuario que estén en alguna etapa de la simulacion
+    - Agregar proceso -> Redirige a un formulario para crear un proceso nuevo y registrarlo en la base de datos. 
+    - Elegir algoritmo -> Redirige a un formulario para elegir el algoritmo y establecer un quantum en caso de ser round robin el algoritmo seleccionado. 
+    - Estadisticas -> Se pretende algo simple o como una extension de este proyecto tener una estadística de las simulaciones realizadas por el usuario donde se puedan ver las distintas métricas conseguidas para esa lista de procesos con el algoritmo seleccionado. 
+
+
+En la seccion principal:
+    Se extiende un grafo visual creado con tarjetas html de las 5 etapas por las que pasa un proceso: new, ready, waiting, running, terminated. 
+    Cada tarjeta/card tiene el nombre de la etapa, un botón de ver más que al clickear despliega la lista de procesos que se encuentran en dicha etapa y una cantidad que muestra la cantidad de procesos que tiene esa etapa. 
+    La edición de procesos y eliminación de procesos por parte del usuario serán unicamente posibles por una decision de diseño en la etapa de new. 
+
+En el pie de página:
+    - About -> Redirige a una seccion que hable sobre el proyecto 
+    - Linkedin -> Redirige al linkedin del desarrollador del proyecto :D
+
+
+
+Aclaraciones finales: Se desconoce cuánto de este proyecto sea alcanzable durante el transcurso de la materia, pero se hará lo posible por dejar un buen mvp. 

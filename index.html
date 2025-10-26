@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scheduler Web Interface</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header class="encabezado">
+        <h1>Scheduler Web Interface</h1>
+        <nav>
+            <ul>
+                <li><a href="">Procesos</a></li>
+                <li><a href="proceso_form.html">Agregar Proceso</a></li>
+                <li><a href="algoritmo.html">Elegir Algoritmo</a></li>
+                <li><a href="estadisticas.html">Estadísticas</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section class="card-container">
+
+            <article class="card">
+                <header class="card-header"><h3>New</h3></header>
+                <footer class="card-footer">
+                    <ul>
+                        <li>
+                            <a href="procesos_nuevos" class="button">Ver más</a>
+                        </li>
+                        <li>
+                            <a href="cant_procesos_nuevos" class="button">cantidad</a>
+                        </li>
+                    </ul>
+                </footer>
+            </article>
+            <div class="ready-vs-waiting">
+
+                <article class="card">
+                    <header class="card-header"><h3>Ready</h3></header>
+                    <footer class="card-footer">
+                        <ul>
+                            <li>
+                                <a href="procesos_listos" class="button">Ver más</a>
+                            </li>
+                            <li>
+                                <a href="cant_procesos_listos" class="button">cantidad</a>
+                            </li>
+                        </ul>
+                    </footer>
+                </article>
+                <article class="card">
+                    <header class="card-header"><h3>Waiting</h3></header>
+                    <footer class="card-footer">
+                        <ul>
+                            <li>
+                                <a href="procesos_en_espera" class="button">Ver más</a>
+                            </li>
+                            <li>
+                                <a href="cant_procesos_en_espera" class="button">cantidad</a>
+                            </li>
+                        </ul>
+                    </footer>
+                </article>
+            </div>
+            <article class="card">
+                <header class="card-header"><h3>Running</h3></header>
+                <footer class="card-footer">
+                    <ul>
+                        <li>
+                            <a href="procesos_en_ejecucion" class="button">Ver más</a>
+                        </li>
+                        <li>
+                            <a href="cant_procesos_en_ejecucion" class="button"> cantidad</a>
+                        </li>
+                    </ul>
+                </footer>
+            </article>
+            <article class="card">
+                <header class="card-header"><h3>Terminated</h3></header>
+                <footer class="card-footer">
+                    <ul>
+                        <li>
+                            <a href="procesos_terminados" class="button">Ver más</a>
+                        </li>
+                        <li>
+                            <a href="cant_procesos_terminados" class="button">cantidad</a>
+                        </li>
+                    </ul>
+                </footer>
+            </article>
+        </section>
+        <section class="start-section">
+            <a href="ejecutar_simulacion" class="button" id="comenzar">Comenzar</a>
+        </section>
+    </main>
+    <footer class="footer">
+        <ul>
+            <li><a href="about">About</a></li>
+            <li><a href="linkedin">Linkedin</a></li>
+        </ul>
+    </footer>
+</body>
+</html>
