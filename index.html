@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scheduler Web Interface</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="frontend/css/styles.css">
 </head>
 <body>
     <header class="encabezado">
         <h1>Scheduler Web Interface</h1>
         <nav>
             <ul>
-                <li><a href="">Procesos</a></li>
-                <li><a href="proceso_form.html">Agregar Proceso</a></li>
-                <li><a href="algoritmo.html">Elegir Algoritmo</a></li>
-                <li><a href="estadisticas.html">Estadísticas</a></li>
+                <li><a href="#listado">Procesos</a></li>
+                <li><a id="btn-add">Agregar Proceso</a></li>
+                <li><a href="frontend/pages/algoritmo.html" >Elegir Algoritmo</a></li>
+                <li><a href="frontend/pages/estadisticas.html">Estadísticas</a></li>
             </ul>
         </nav>
     </header>
@@ -94,11 +94,42 @@
             <a href="ejecutar_simulacion" class="button" id="comenzar">Comenzar</a>
         </section>
     </main>
-    <footer class="footer">
+   <!--
+   <footer class="footer">
         <ul>
             <li><a href="about">About</a></li>
             <li><a href="linkedin">Linkedin</a></li>
         </ul>
-    </footer>
+    </footer>  -->
+    <h3>Listado de procesos: </h3>
+    <p>(Nota: esto pretendo que se vea en el menú hamburguesa que quiero hacer para procesos :D  así queda más prolijo y que por cada etapa haya un listado de procesos al que le paso un query param que sea "estado" = etapa y sea lo visible en el ver mas)</p>
+
+    <section id="listado">
+    </section>
+    <section>
+        <dialog id="modal">
+            <button type="button" id="btn-close-form-popUp">Cerrar</button>
+            <form id="form-editar-agregar">
+                <fieldset>
+                    <legend>Formulario de Proceso</legend>
+
+                    <label for="nombre">Nombre</label>
+                    <input name="nombre" id="nombre" type="text" placeholder="Ingrese el nombre del proceso" />
+
+                    <label for="prioridad">Prioridad</label>
+                    <input type="number" name="prioridad" id="prioridad" placeholder="Ingrese la prioridad del proceso" />
+
+                    <label for="burst_time">Burst Time</label>
+                    <input type="number" name="burst_time" id="burst_time" placeholder="Ingrese el burst time del proceso" required />
+
+                    <label for="arrival_time">Arrival time</label>
+                    <input type="number" name="arrival_time" id="arrival_time" placeholder="Ingrese el arrival time del proceso" required />
+
+                    <button type="submit" id="btn-editar-o-agregar">Enviar</button>
+                </fieldset>
+            </form>
+        </dialog>
+    </section>
+    <script rel="text/javascript" src="frontend/js/main.js"></script>
 </body>
 </html>
