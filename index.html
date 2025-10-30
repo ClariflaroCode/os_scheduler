@@ -11,14 +11,16 @@
         <h1>Scheduler Web Interface</h1>
         <nav>
             <ul>
-                <li><a href="#listado">Procesos</a></li>
-                <li><a id="btn-add">Agregar Proceso</a></li>
-                <li><a href="frontend/pages/algoritmo.html" >Elegir Algoritmo</a></li>
-                <li><a href="frontend/pages/estadisticas.html">Estadísticas</a></li>
+                <li><a href="#listado" class="menu-option">Procesos</a></li>
+                <li><a id="btn-add" class="menu-option">Agregar Proceso</a></li>
+                <li><a href="frontend/pages/algoritmo.html" class="menu-option">Elegir Algoritmo</a></li>
+                <li><a href="frontend/pages/estadisticas.html" class="menu-option">Estadísticas</a></li>
             </ul>
         </nav>
     </header>
     <main>
+
+    <section id="grafo">
         <section class="card-container">
 
             <article class="card">
@@ -93,7 +95,7 @@
         <section class="start-section">
             <a href="ejecutar_simulacion" class="button" id="comenzar">Comenzar</a>
         </section>
-    </main>
+    </section>
    <!--
    <footer class="footer">
         <ul>
@@ -106,30 +108,33 @@
 
     <section id="listado">
     </section>
-    <section>
+    <section id="dialog-section">
         <dialog id="modal">
-            <button type="button" id="btn-close-form-popUp">Cerrar</button>
-            <form id="form-editar-agregar">
+            <section id="form-header">
+                <button type="button" id="btn-close-form-popUp" class="button">Cerrar</button>
+            </section>
+            <form id="form-editar-agregar" class="form">
                 <fieldset>
                     <legend>Formulario de Proceso</legend>
 
                     <label for="nombre">Nombre</label>
-                    <input name="nombre" id="nombre" type="text" placeholder="Ingrese el nombre del proceso" />
+                    <input name="nombre" id="nombre" type="text" placeholder="Ingrese el nombre del proceso" class="input" required/>
 
                     <label for="prioridad">Prioridad</label>
-                    <input type="number" name="prioridad" id="prioridad" placeholder="Ingrese la prioridad del proceso" />
+                    <input type="number" name="prioridad" id="prioridad" placeholder="Ingrese la prioridad del proceso" class="input" required/>
 
                     <label for="burst_time">Burst Time</label>
-                    <input type="number" name="burst_time" id="burst_time" placeholder="Ingrese el burst time del proceso" required />
+                    <input type="number" name="burst_time" id="burst_time" placeholder="Ingrese el burst time del proceso" class="input" required />
 
                     <label for="arrival_time">Arrival time</label>
-                    <input type="number" name="arrival_time" id="arrival_time" placeholder="Ingrese el arrival time del proceso" required />
+                    <input type="number" name="arrival_time" id="arrival_time" placeholder="Ingrese el arrival time del proceso"  class="input" required />
 
-                    <button type="submit" id="btn-editar-o-agregar">Enviar</button>
+                    <button type="submit" id="btn-editar-o-agregar" class="button">Enviar</button>
                 </fieldset>
             </form>
         </dialog>
     </section>
+    </main>
     <script rel="text/javascript" src="frontend/js/main.js"></script>
 </body>
 </html>

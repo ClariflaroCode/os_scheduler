@@ -214,6 +214,8 @@ function iniciar () {
 
                 card.classList.add('card');
                 list.classList.add('card-footer');
+                btnDelete.classList.add('button');
+                btnModify.classList.add('button');
 
             });
             

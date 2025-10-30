@@ -3,7 +3,7 @@ tmp_dir = "tmp"
 [build]
   cmd = "make build"
   bin = "my-app"
-  full_bin = "APP_ENV=dev APP_USER=air ./my-app"
+  full_bin = "APP_ENV=dev APP_USER=air ./myapp"
   include_ext = ["go", "templ", "sql"]
   exclude_dir = ["tmp", "vendor"]
 [run]
