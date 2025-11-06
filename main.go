@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strings"
 	"strconv"
+    "fmt"
 	_ "github.com/lib/pq"
 	db "scheduler_os/backend/db/sqlc"
 
@@ -43,6 +44,11 @@ func main() {
 
 
 	mux.Handle("/", http.FileServer(http.Dir("./frontend")))
+
+    err = http.ListenAndServe(":8080", mux)
+    if err != nil {
+        fmt.Println("Error al iniciar el servidor:", err)
+    }
 
 
 }

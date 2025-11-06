@@ -27,8 +27,8 @@ clean-db: db-up
 	@echo "Reseteando la base de datos"
 #docker compose exec database psql -U root -d myapp -c "DROP TABLE IF EXISTS procesos CASCADE;"
 
-	psql "postgres://root:root@localhost:5432/myapp?sslmode=disable" -c "DROP TABLE IF EXISTS procesos CASCADE;"
-	psql "postgres://root:root@localhost:5432/myapp?sslmode=disable" -f backend/db/schema/schema.sql
+	#psql "postgres://root:root@localhost:5432/myapp?sslmode=disable" -c "DROP TABLE IF EXISTS procesos CASCADE;"
+	#psql "postgres://root:root@localhost:5432/myapp?sslmode=disable" -f backend/db/schema/schema.sql
 
 db-up: db-down
 	@echo " Levantando base de datos PostgreSQL..."
