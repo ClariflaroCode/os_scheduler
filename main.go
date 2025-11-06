@@ -9,7 +9,7 @@ import (
 	"strings"
 	"strconv"
 	_ "github.com/lib/pq"
-	db "scheduler_os/db/sqlc"
+	db "scheduler_os/backend/db/sqlc"
 
 
 )
@@ -44,7 +44,6 @@ func main() {
 
 	mux.Handle("/", http.FileServer(http.Dir("./frontend")))
 
-	log.Fatal(http.ListenAndServe(":8080", enableCORS(mux)))
 
 }
 func handleProcesos(w http.ResponseWriter, r *http.Request) {
@@ -123,26 +122,7 @@ func listProcesos(w http.ResponseWriter, r *http.Request) {
 
 	writeJSON(w, procesos, http.StatusOK)
 }
-func enableCORS(next http.Handler) http.Handler {
-    allowedOrigins := map[string]bool{
-        "http://127.0.0.1:5500": true,
-        "http://localhost:5500": true,
-    }
 
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        origin := r.Header.Get("Origin")
-
-        if allowedOrigins[origin] {
-            w.Header().Set("Access-Control-Allow-Origin", origin)
-        }
-
-        w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-        w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-        w.Header().Set("Access-Control-Max-Age", "86400")
-
-        next.ServeHTTP(w, r)
-    })
-}
 
 func getProceso(w http.ResponseWriter, r *http.Request, id int32) {
 	proceso, err := queries.GetProcess(context.Background(), id)
