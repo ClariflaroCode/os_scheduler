@@ -48,19 +48,15 @@ func main() {
 
 }
 func handleProcesos(w http.ResponseWriter, r *http.Request) {
-    // 💡 DIAGNÓSTICO: Esto te mostrará qué método está viendo realmente el servidor.
-    log.Printf("Entre al handleProcesos. Método de la solicitud: %s", r.Method)
     
     path := strings.TrimPrefix(r.URL.Path, "/api/procesos")
     path = strings.Trim(path, "/")
 
     switch r.Method {
     case http.MethodOptions: 
-        // Si el método es OPTIONS, ya se han puesto los encabezados CORS en enableCORS,
-        // solo necesitamos devolver un 200 OK y terminar.
         w.WriteHeader(http.StatusOK)
         return
-        
+            
     case "GET":
         if path == "" {
             listProcesos(w, r)
@@ -134,16 +130,10 @@ func enableCORS(next http.Handler) http.Handler {
     }
 
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        // Obtener el origen de la solicitud
         origin := r.Header.Get("Origin")
 
-        // Si el origen está en nuestra lista blanca, lo devolvemos como permitido
         if allowedOrigins[origin] {
             w.Header().Set("Access-Control-Allow-Origin", origin)
-        } else {
-            // Si el origen no está permitido (ej: una IP externa), puedes omitir el header
-            // o usar una política de denegación más explícita.
-            // Para localhost/127.0.0.1, esta rama no debería ejecutarse.
         }
 
         w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
@@ -190,12 +180,10 @@ func createProceso(w http.ResponseWriter, r *http.Request) {
 
 func updateProceso(w http.ResponseWriter, r *http.Request, id int32) {
     var p db.UpdateProcessParams
-	log.Printf("pase la verga de los params con el update")
     if err := json.NewDecoder(r.Body).Decode(&p); err != nil {
         http.Error(w, "JSON inválido", http.StatusBadRequest)
         return
     }
-	log.Printf("esquive el error del decoder en el update")
     p.ID = id
 
     err := queries.UpdateProcess(context.Background(), p)
@@ -203,7 +191,6 @@ func updateProceso(w http.ResponseWriter, r *http.Request, id int32) {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
-	log.Printf("esquive el segundo if del update")
     // Recuperar el proceso actualizado para devolverlo como JSON
     proceso, err := queries.GetProcess(context.Background(), id)
     if err != nil {
@@ -211,7 +198,6 @@ func updateProceso(w http.ResponseWriter, r *http.Request, id int32) {
         return
     }
 
-    log.Printf("✅ Proceso %d actualizado correctamente", id)
     writeJSON(w, proceso, http.StatusOK)
 }
 
