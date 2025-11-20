@@ -1,15 +1,27 @@
-package templates
+package views
 templ StaticLayout() {
     <!DOCTYPE html>
-    <html>
+    <html lang="es">
         <head>
-            <title>OS Scheduler</title>
+            <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <link rel="stylesheet" href="../css/pico.css"> 
+            <title>Scheduler Web Interface</title>
+            <link rel="stylesheet" href="../css/pico.css">
         </head>
         <body>
+            <header class="encabezado">
+                <h1>Scheduler Web Interface</h1>
+                <nav>
+                    <ul>
+                        <li><a href="#listado" class="menu-option">Procesos</a></li>
+                        <li><a id="btn-add" class="menu-option" href="/agregar">Agregar Proceso</a></li>
+                        <li><a href="/algoritmo" class="menu-option">Elegir Algoritmo</a></li>
+                        <li><a href="/estadisticas" class="menu-option">Estadísticas</a></li>
+                    </ul>
+                </nav>
+            </header>
             <main>
-                
+                {}
             </main>
         </body>
     </html>
