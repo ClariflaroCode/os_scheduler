@@ -18,7 +18,7 @@ build: generate
 	@echo " Compilando aplicación..."
 	go build -o $(APP_NAME) .
 
-run: clean-db
+run: build db-up
 	@echo " Iniciando servidor en http://localhost:8080"
 	./$(APP_NAME)
 clean:
@@ -30,7 +30,7 @@ clean-db: db-up
 	#psql "postgres://root:root@localhost:5432/myapp?sslmode=disable" -c "DROP TABLE IF EXISTS procesos CASCADE;"
 	#psql "postgres://root:root@localhost:5432/myapp?sslmode=disable" -f backend/db/schema/schema.sql
 
-db-up: db-down
+db-up:
 	@echo " Levantando base de datos PostgreSQL..."
 	docker-compose up -d 
 
@@ -41,9 +41,9 @@ db-up: db-down
 
 db-down:
 	@echo " Apagando base de datos..."
-	docker-compose down
+	docker-compose down --volumes
 #con el "&" se consigue que el servidor quede corriendo y se ejecuten las siguientes lineas. El $$! captura el id del proceso que esta corriendo en el servidor para luego desalojarlo. 
-test: build db-up
+test: build db-up db-down
 	./$(APP_NAME) & 
 	SERVER_PID=$$! 
 	sleep 2
