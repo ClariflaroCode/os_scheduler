@@ -1,10 +1,10 @@
 version: "2"
 sql:
   - engine: "postgresql" # tipo de base de datos
-    queries: "./backend/db/queries/queries.sql" # directorio que contiene los archivos .sql con las consultas
-    schema: "./backend/db/schema/schema.sql" # directorio con los archivos SQL de definición del esquema de la BD
+    queries: "./db/queries/queries.sql" # directorio que contiene los archivos .sql con las consultas
+    schema: "./db/schema/schema.sql" # directorio con los archivos SQL de definición del esquema de la BD
     gen:  
       go:
         package: "db" # nombre del paquete go para el código generado
-        out: "./backend/db/sqlc/" # ruta donde se guardará el código
+        out: "./db/sqlc/" # ruta donde se guardará el código
         emit_json_tags: true # indica si se deben generar tags json en los structs

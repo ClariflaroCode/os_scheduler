@@ -33,7 +33,6 @@ clean-db: db-up
 db-up: db-down
 	@echo " Levantando base de datos PostgreSQL..."
 	docker-compose up -d 
-	docker compose up -d database
 
 	@echo "Esperando a PostgreSQL..."
 	until docker-compose exec database pg_isready -U root -d myapp; do \
