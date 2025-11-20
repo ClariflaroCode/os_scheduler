@@ -11,8 +11,7 @@ import (
     "fmt"
 	_ "github.com/lib/pq"
 	db "scheduler_os/backend/db/sqlc"
-
-
+    template "backend/views"
 )
 
 var queries *db.Queries
@@ -66,13 +65,13 @@ func handleProcesos(w http.ResponseWriter, r *http.Request) {
         if path == "" {
             listProcesos(w, r)
             return
-        }
+        }/*
         id, err := strconv.Atoi(path)
         if err != nil {
             http.Error(w, "ID inválido", http.StatusBadRequest)
             return
         }
-        getProceso(w, r, int32(id))
+        getProceso(w, r, int32(id))*/
         return
 
     case "POST":
@@ -82,7 +81,7 @@ func handleProcesos(w http.ResponseWriter, r *http.Request) {
         }
         createProceso(w, r)
         return
-
+        /*
     case "PUT":
         if path == "" {
             http.Error(w, "Falta ID", http.StatusBadRequest)
@@ -108,7 +107,7 @@ func handleProcesos(w http.ResponseWriter, r *http.Request) {
         }
         deleteProceso(w, r, int32(id))
         return
-
+*/
     default:
         // Si no es OPTIONS y no es ninguno de los métodos permitidos, devuelve 405.
         http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
@@ -125,10 +124,12 @@ func listProcesos(w http.ResponseWriter, r *http.Request) {
 		procesos = []db.Proceso{}
 	}
 
-
-	writeJSON(w, procesos, http.StatusOK)
+    template.StaticLayout()
+    template.ListarProcesos()
+    template.StaticFooter()
+	//writeJSON(w, procesos, http.StatusOK)
 }
-
+/*
 
 func getProceso(w http.ResponseWriter, r *http.Request, id int32) {
 	proceso, err := queries.GetProcess(context.Background(), id)
@@ -140,7 +141,7 @@ func getProceso(w http.ResponseWriter, r *http.Request, id int32) {
 		return
 	}
 	writeJSON(w, proceso, http.StatusOK)
-}
+}*/
 
 func createProceso(w http.ResponseWriter, r *http.Request) {
     var p db.CreateProcessParams
@@ -163,7 +164,7 @@ func createProceso(w http.ResponseWriter, r *http.Request) {
 	}
 	writeJSON(w, newP, http.StatusCreated)
 }
-
+/*
 func updateProceso(w http.ResponseWriter, r *http.Request, id int32) {
     var p db.UpdateProcessParams
     if err := json.NewDecoder(r.Body).Decode(&p); err != nil {
@@ -201,4 +202,4 @@ func writeJSON(w http.ResponseWriter, data interface{}, status int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(data)
-}
+}*/
