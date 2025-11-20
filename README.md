@@ -18,7 +18,6 @@ myapp
 │     │    └─queries.sql.go\
 │     ├──sqlc.yaml\
 └──frontend  
-│    ├──README.md\
 │    ├──css\
 │    │   └──styles.css\
 │    ├──js\
