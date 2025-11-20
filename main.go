@@ -43,7 +43,7 @@ func main() {
 	})
 
 
-	mux.Handle("/", http.FileServer(http.Dir("./frontend")))
+	mux.Handle("/", http.FileServer(http.Dir("./backend")))
 
     err = http.ListenAndServe(":8080", mux)
     if err != nil {

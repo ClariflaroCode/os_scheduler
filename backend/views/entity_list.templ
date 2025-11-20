@@ -1,0 +1,22 @@
+
+package templates
+templ ListarProcesos(procesos []db.Proceso) {
+    <html>
+        <main>
+            <section>
+                    for _, proceso := range procesos {
+                        <article class="card">
+                            <ul>
+                                <li>{ proceso.Name }</li>
+                                <li>{ proceso.Prioridad }</li>
+                                <li>{ proceso.BurstTime }</li>
+                                <li>{ proceso.ArrivalTime }</li>
+                                <li>{ proceso.Estado }</li>
+                                <li>{ proceso.IDSimulacion }</li>
+                            </ul>
+                        </article>
+                    }
+            </section>
+        </main>
+    </html>
+}

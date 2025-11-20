@@ -11,8 +11,8 @@ all: run
 generate: 
 	@echo " Generando código SQLC..."
 	sqlc generate -f backend/sqlc.yaml
-#@echo ">= Generating Templ code..."
-#@templ generate
+	@echo ">= Generating Templ code..."
+	@templ generate
 
 build: generate
 	@echo " Compilando aplicación..."
