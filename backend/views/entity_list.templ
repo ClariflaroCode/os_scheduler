@@ -1,22 +1,20 @@
 
 package templates
+import "scheduler_os/backend/db/sqlc"
+
 templ ListarProcesos(procesos []db.Proceso) {
-    <html>
-        <main>
-            <section>
-                    for _, proceso := range procesos {
-                        <article class="card">
-                            <ul>
-                                <li>{ proceso.Name }</li>
-                                <li>{ proceso.Prioridad }</li>
-                                <li>{ proceso.BurstTime }</li>
-                                <li>{ proceso.ArrivalTime }</li>
-                                <li>{ proceso.Estado }</li>
-                                <li>{ proceso.IDSimulacion }</li>
-                            </ul>
-                        </article>
-                    }
-            </section>
-        </main>
-    </html>
+    <section>
+            for _, proceso := range procesos {
+                <article class="card">
+                    <ul>
+                        <li>{ proceso.Nombre }</li>
+                        <li>{ proceso.Prioridad }</li>
+                        <li>{ proceso.BurstTime }</li>
+                        <li>{ proceso.ArrivalTime }</li>
+                        <li>{ proceso.Estado }</li>
+                        <li>{ proceso.IDSimulacion }</li>
+                    </ul>
+                </article>
+            }
+    </section>
 }

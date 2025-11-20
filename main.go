@@ -162,7 +162,8 @@ func createProceso(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	writeJSON(w, newP, http.StatusCreated)
+    createProcess()
+	//writeJSON(w, newP, http.StatusCreated)
 }
 /*
 func updateProceso(w http.ResponseWriter, r *http.Request, id int32) {
