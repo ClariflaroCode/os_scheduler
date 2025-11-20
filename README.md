@@ -4,27 +4,26 @@ Este proyecto se realizó para la cátedra de programación web de la carrera de
 **ESTRUCTURA ACTUAL DEL PROYECTO:**  
 myapp  
 │  
-├──index.html\
 ├──backend\
-
 │     ├──db\
 │     │   ├──queries\
 │     │   │   └──queries.sql\
 │     │   └──schema  
 │     │          └──schema.sql   
-│     └─sqlc\
+│     ├──sqlc\
 │     │    ├─db.go   
 │     │    ├─models.go\
 │     │    └─queries.sql.go\
 │     ├──sqlc.yaml\
-└──frontend  
-│    ├──css\
-│    │   └──styles.css\
-│    ├──js\
-│    │   └──main.js\
-│    └── pages\
-│    │    ├──algoritmo.html   
-│    │    └──estadisticas.html   <!--Esta pagina podría ser un template de templ creo-->
+|     ├──views\ 
+|     |     ├─ layout.templ\ 
+|     |     ├─ grafo.templ\ 
+|     |     ├─ entity_list.templ\ 
+|     |     ├─ entity_form.templ\ 
+|     |     └─ estadisticas.templ\ 
+|     └──css\
+│          └──pico.css\
+│    
 ├──main.go\
 ├──Makefile\
 ├──request.hurl\
@@ -32,6 +31,7 @@ myapp
 ├──go.mod\
 ├──docker-compose.yml\
 └── README.md
+
 **PARA EJECUTAR EL PROYECTO**  
 *Para correr el backend*
 - Correr el comando make all
