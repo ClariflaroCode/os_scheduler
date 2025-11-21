@@ -8,7 +8,7 @@ package views
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func StaticLayout() templ.Component {
+func StaticLayout(contenido templ.Component) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -29,7 +29,15 @@ func StaticLayout() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"es\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Scheduler Web Interface</title><link rel=\"stylesheet\" href=\"../css/pico.css\"></head><body><header class=\"encabezado\"><h1>Scheduler Web Interface</h1><nav><ul><li><a href=\"#listado\" class=\"menu-option\">Procesos</a></li><li><a id=\"btn-add\" class=\"menu-option\" href=\"/agregar\">Agregar Proceso</a></li><li><a href=\"/algoritmo\" class=\"menu-option\">Elegir Algoritmo</a></li><li><a href=\"/estadisticas\" class=\"menu-option\">Estadísticas</a></li></ul></nav></header><main></main></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"es\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Scheduler Web Interface</title><link rel=\"stylesheet\" href=\"/css/pico.css\"></head><body><header class=\"encabezado\"><h1>Scheduler Web Interface</h1><nav><ul><li><a href=\"/listado\" class=\"menu-option\">Procesos</a></li><li><a id=\"btn-add\" class=\"menu-option\" href=\"/agregar\">Agregar Proceso</a></li><li><a href=\"/algoritmo\" class=\"menu-option\">Elegir Algoritmo</a></li><li><a href=\"/estadisticas\" class=\"menu-option\">Estadísticas</a></li></ul></nav></header><main>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = contenido.Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</main></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

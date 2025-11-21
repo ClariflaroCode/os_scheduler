@@ -9,7 +9,7 @@ templ CrearGrafo() {
                 <footer class="card-footer">
                     <ul>
                         <li>
-                            <a href="procesos_nuevos" class="button">Ver más</a>
+                            <a href="/procesos?estado=new" class="button">Ver más</a>
                         </li>
                 
                     </ul>
@@ -22,7 +22,7 @@ templ CrearGrafo() {
                     <footer class="card-footer">
                         <ul>
                             <li>
-                                <a href="procesos_listos" class="button">Ver más</a>
+                                <a href="/procesos?estado=ready" class="button">Ver más</a>
                             </li>
                     
                         </ul>
@@ -33,7 +33,7 @@ templ CrearGrafo() {
                     <footer class="card-footer">
                         <ul>
                             <li>
-                                <a href="procesos_en_espera" class="button">Ver más</a>
+                                <a href="/procesos?estado=waiting" class="button">Ver más</a>
                             </li>
                         
                         </ul>
@@ -45,7 +45,7 @@ templ CrearGrafo() {
                 <footer class="card-footer">
                     <ul>
                         <li>
-                            <a href="procesos_en_ejecucion" class="button">Ver más</a>
+                            <a href="/procesos?estado=running" class="button">Ver más</a>
                         </li>
                     
                     </ul>
@@ -56,7 +56,7 @@ templ CrearGrafo() {
                 <footer class="card-footer">
                     <ul>
                         <li>
-                            <a href="procesos_terminados" class="button">Ver más</a>
+                            <a href="/procesos?estado=terminated" class="button">Ver más</a>
                         </li>
                  
                     </ul>
@@ -64,7 +64,7 @@ templ CrearGrafo() {
             </article>
         </section>
         <section class="start-section">
-            <a href="ejecutar_simulacion" class="button" id="comenzar">Comenzar</a>
+            <a href="/ejecutar_simulacion" class="button" id="comenzar">Comenzar</a>
         </section>
     </section>
 }

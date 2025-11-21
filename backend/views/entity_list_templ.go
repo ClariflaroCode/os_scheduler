@@ -2,7 +2,7 @@
 
 // templ: version: v0.3.960
 
-package templates
+package views
 
 //lint:file-ignore SA4006 This context is only used if a nested component is present.
 
