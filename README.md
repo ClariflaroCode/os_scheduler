@@ -18,6 +18,7 @@ myapp
 |     ├──views\ 
 |     |     ├─ layout.templ\ 
 |     |     ├─ grafo.templ\ 
+|     |     ├─ home.templ\ 
 |     |     ├─ entity_list.templ\ 
 |     |     ├─ entity_form.templ\ 
 |     |     └─ estadisticas.templ\ 
@@ -26,7 +27,6 @@ myapp
 │    
 ├──main.go\
 ├──Makefile\
-├──request.hurl\
 ├──go.sum\
 ├──go.mod\
 ├──docker-compose.yml\
@@ -36,9 +36,6 @@ myapp
 *Para correr el backend*
 - Correr el comando make all
 
-
-*Para correr los testeos del hurl*
-- Correr el comando make test 
 
 Alumna: Julieta Watts   
 Materia: Programación web  
