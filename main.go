@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"log"
 	"net/http"
 	"strings"
@@ -36,13 +35,12 @@ func main() {
 	})
 
 
-	mux.Handle("/", http.FileServer(http.Dir("./backend")))
+	mux.HandleFunc("/", handleHome)
     mux.HandleFunc("/agregar", showCreateForm)
-
 //    mux.HandleFunc("/estadisticas", showEstadisticas)
 
   //  mux.HandleFunc("/algoritmo", showAlgoritmoForm)
-
+    mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./backend/static"))))
     err = http.ListenAndServe(":8080", mux)
     if err != nil {
         fmt.Println("Error al iniciar el servidor:", err)
@@ -53,8 +51,19 @@ func main() {
 func showCreateForm(w http.ResponseWriter, r *http.Request) {
     views.StaticLayout( views.AgregarForm()).Render(context.Background(), w)
 }
-func showCreateForm(w http.ResponseWriter, r *http.Request) {
-    views.StaticLayout( views.CrearGrafo()).Render(context.Background(), w)
+func handleHome(w http.ResponseWriter, r *http.Request) {
+    
+    procesos, err := queries.ListProcess(context.Background())
+    if err != nil {
+        http.Error(w, "Error al cargar procesos: "+err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    if procesos == nil {
+        procesos = []db.Proceso{}
+    }
+
+    views.StaticLayout(views.HomeView(procesos)).Render(context.Background(), w)
 }
 
 func handleProcesos(w http.ResponseWriter, r *http.Request) {
@@ -96,11 +105,7 @@ func listProcesos(w http.ResponseWriter, r *http.Request) {
 
 func createProceso(w http.ResponseWriter, r *http.Request) {
     var p db.CreateProcessParams
-	if err := json.NewDecoder(r.Body).Decode(&p); err != nil {
-		log.Printf("Error al decodificar JSON: %v", err)
-		http.Error(w, "JSON inválido: " + err.Error(), http.StatusBadRequest)
-		return
-	}
+	
 
 
 	if p.Estado == "" {
@@ -108,7 +113,7 @@ func createProceso(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-    nuevoProceso, err := queries.CreateProcess(ctx, params) 
+    _, err := queries.CreateProcess(context.Background(), p)  //_, sirve para cuando no vas a usar la variable :D
     if err != nil {
         return
     }

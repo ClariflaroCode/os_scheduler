@@ -1,0 +1,11 @@
+package views
+
+import db "scheduler_os/backend/db/sqlc"
+
+templ HomeView(procesos []db.Proceso) {
+    <section>
+        @CrearGrafo()
+        
+        @ListarProcesos(procesos)
+    </section>
+}
