@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
     "fmt"
+    "strconv"
 	_ "github.com/lib/pq"
 	db "scheduler_os/backend/db/sqlc"
     views "scheduler_os/backend/views"
@@ -104,18 +105,45 @@ func listProcesos(w http.ResponseWriter, r *http.Request) {
 
 
 func createProceso(w http.ResponseWriter, r *http.Request) {
-    var p db.CreateProcessParams
 	
-
-
-	if p.Estado == "" {
-		http.Error(w, "El campo 'estado' es obligatorio", http.StatusBadRequest)
-		return
-	}
-
-    _, err := queries.CreateProcess(context.Background(), p)  //_, sirve para cuando no vas a usar la variable :D
-    if err != nil {
+    if err := r.ParseForm(); err != nil {
+        http.Error(w, "Error al procesar el formulario", http.StatusBadRequest)
         return
     }
+
+    toInt32 := func(key string) (int32, error) {
+        valStr := r.FormValue(key)
+        // Intentamos convertir el string a un entero de 32 bits
+        valInt, err := strconv.ParseInt(valStr, 10, 32) 
+        if err != nil {
+            return 0, fmt.Errorf("el campo '%s' es inválido o está vacío", key)
+        }
+        return int32(valInt), nil
+    }
+
+    var p db.CreateProcessParams
+    var err error
+
+    p.Nombre = r.FormValue("nombre")
+    p.Estado = r.FormValue("estado") // Viene del input hidden
+
+    p.Prioridad, err = toInt32("prioridad")
+    if err != nil { http.Error(w, err.Error(), http.StatusBadRequest); return }
+
+    p.BurstTime, err = toInt32("burst_time")
+    if err != nil { http.Error(w, "El campo 'Burst Time' es inválido.", http.StatusBadRequest); return }
+
+    p.ArrivalTime, err = toInt32("arrival_time")
+    if err != nil { http.Error(w, "El campo 'Arrival time' es inválido.", http.StatusBadRequest); return }
+    
+    _, err = queries.CreateProcess(context.Background(), p)
+    
+    if err != nil {
+        log.Printf("Error al crear proceso en DB: %v", err)
+        http.Error(w, "Error interno al guardar el proceso. Ver logs del servidor.", http.StatusInternalServerError)
+        return
+    }
+    
+    http.Redirect(w, r, "/", http.StatusSeeOther)
     
 }
