@@ -4,17 +4,22 @@ import "scheduler_os/backend/db/sqlc"
 
 templ ListarProcesos(procesos []db.Proceso) {
     <section>
-            for _, proceso := range procesos {
-                <article class="card">
-                    <h2>{ proceso.Nombre }</h2>
+            if len(procesos) == 0{
+                <h3> No hay procesos </h3>
+            } else {
 
-                    <ul class="card-footer">
-                        <li>Prioridad: { proceso.Prioridad }</li>
-                        <li>Burst Time:{ proceso.BurstTime }</li>
-                        <li>Arrival Time{ proceso.ArrivalTime }</li>
-                        <li>Estado: { proceso.Estado }</li>
-                    </ul>
-                </article>
+                for _, proceso := range procesos {
+                    <article class="card">
+                        <h2>{ proceso.Nombre }</h2>
+
+                        <ul class="card-footer">
+                            <li>Prioridad: { proceso.Prioridad }</li>
+                            <li>Burst Time:{ proceso.BurstTime }</li>
+                            <li>Arrival Time{ proceso.ArrivalTime }</li>
+                            <li>Estado: { proceso.Estado }</li>
+                        </ul>
+                    </article>
+                }
             }
     </section>
 }
