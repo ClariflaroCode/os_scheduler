@@ -43,11 +43,5 @@ db-down:
 	@echo " Apagando base de datos..."
 	docker-compose down --volumes
 #con el "&" se consigue que el servidor quede corriendo y se ejecuten las siguientes lineas. El $$! captura el id del proceso que esta corriendo en el servidor para luego desalojarlo. 
-test: build db-up db-down
-	./$(APP_NAME) & 
-	SERVER_PID=$$! 
-	sleep 2
-	hurl request.hurl
-	kill $$SERVER_PID
 
 

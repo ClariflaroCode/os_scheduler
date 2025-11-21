@@ -6,13 +6,13 @@ templ ListarProcesos(procesos []db.Proceso) {
     <section>
             for _, proceso := range procesos {
                 <article class="card">
-                    <ul>
-                        <li>{ proceso.Nombre }</li>
-                        <li>{ proceso.Prioridad }</li>
-                        <li>{ proceso.BurstTime }</li>
-                        <li>{ proceso.ArrivalTime }</li>
-                        <li>{ proceso.Estado }</li>
-                        <li>{ proceso.IDSimulacion }</li>
+                    <h2>{ proceso.Nombre }</h2>
+
+                    <ul class="card-footer">
+                        <li>Prioridad: { proceso.Prioridad }</li>
+                        <li>Burst Time:{ proceso.BurstTime }</li>
+                        <li>Arrival Time{ proceso.ArrivalTime }</li>
+                        <li>Estado: { proceso.Estado }</li>
                     </ul>
                 </article>
             }
