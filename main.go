@@ -99,6 +99,11 @@ func listProcesos(w http.ResponseWriter, r *http.Request) {
 	if procesos == nil {
 		procesos = []db.Proceso{}
 	}
+    
+    if r.Header.Get("HX-Request") == "true" {
+        views.ListarProcesos(procesos).Render(context.Background(), w)
+        return
+    }
 
     views.StaticLayout( views.ListarProcesos(procesos)).Render(context.Background(), w)
 }
@@ -144,6 +149,7 @@ func createProceso(w http.ResponseWriter, r *http.Request) {
         return
     }
     
-    http.Redirect(w, r, "/", http.StatusSeeOther)
+    listProcesos(w, r);
+    //http.Redirect(w, r, "/", http.StatusSeeOther) Elimina la redireccion 
     
 }

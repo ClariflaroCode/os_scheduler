@@ -3,7 +3,7 @@ package views
 templ AgregarForm() {
            
     <section>
-        <form action="/procesos" method="POST">
+        <form action="/procesos" method="POST" hx-post="/procesos" hx-target="#procesos-list" hx-swap="outerHTML">
             <fieldset>
                 <legend>Crear proceso</legend>
 

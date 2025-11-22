@@ -7,6 +7,7 @@ templ StaticLayout(contenido templ.Component) {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Scheduler Web Interface</title>
             <link rel="stylesheet" href="/static/css/pico.css">
+            <script src="https://unpkg.com/htmx.org@1.9.10"></script> <!--Agrega htmx-->
         </head>
         <body>
             <header class="encabezado">
@@ -21,7 +22,10 @@ templ StaticLayout(contenido templ.Component) {
                 </nav>
             </header>
             <main>
-                @contenido
+                <section id="procesos-list"> <!--El contenido se va a reemplazar acá-->
+                    @contenido
+
+                </section>
             </main>
         </body>
     </html>
