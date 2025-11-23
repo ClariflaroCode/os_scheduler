@@ -3,7 +3,7 @@ package views
 templ AgregarForm() {
            
     <section id="lista-procesos">
-        <form action="/procesos" method="POST" hx-post="/procesos" hx-target="#lista-procesos" hx-swap="outerHTML">
+        <form action="/procesos" method="POST" hx-post="/procesos" hx-target="#lista-procesos" hx-swap="outerHTML" class="form">
             <fieldset>
                 <legend>Crear proceso</legend>
 
@@ -22,7 +22,7 @@ templ AgregarForm() {
                 <input type="hidden" name="estado" id="estado" value="new"/>
 
 
-                <button type="submit">Enviar</button>
+                <button class="button" type="submit">Enviar</button>
             </fieldset>
         </form>
     </section>

@@ -24,6 +24,7 @@ templ ListarProcesos(procesos []db.Proceso) {
                                     hx-delete={"/procesos/" + strconv.Itoa(int(proceso.ID))} 
                                     hx-target="closest article" 
                                     hx-swap="delete"
+                                    class="button"
                                 > 
                                     Borrar
                                 </button> <!--El  hx-swap debe ser delete segun dice la documenacion, usando outerHTML se duplicaba el layout-->

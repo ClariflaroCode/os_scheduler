@@ -123,7 +123,7 @@ func ListarProcesos(procesos []db.Proceso) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" hx-target=\"closest article\" hx-swap=\"delete\">Borrar</button><!--El  hx-swap debe ser delete segun dice la documenacion, usando outerHTML se duplicaba el layout--></ul></article>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" hx-target=\"closest article\" hx-swap=\"delete\" class=\"button\">Borrar</button><!--El  hx-swap debe ser delete segun dice la documenacion, usando outerHTML se duplicaba el layout--></ul></article>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
