@@ -3,9 +3,11 @@ package views
 import db "scheduler_os/backend/db/sqlc"
 
 templ HomeView(procesos []db.Proceso) {
-    <section>
+    <section id="grafo">
         @CrearGrafo()
-        
+    </section>
+
+    <section id="procesos-list">
         @ListarProcesos(procesos)
     </section>
 }

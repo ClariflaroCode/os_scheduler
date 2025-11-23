@@ -37,6 +37,7 @@ func main() {
 
 
 	mux.HandleFunc("/", handleHome)
+    
     mux.HandleFunc("/agregar", showCreateForm)
 //    mux.HandleFunc("/estadisticas", showEstadisticas)
 
@@ -83,6 +84,18 @@ func handleProcesos(w http.ResponseWriter, r *http.Request) {
     case "POST":
         createProceso(w, r)
         return
+    case "DELETE":
+        if path == "" {
+            http.Error(w, "Falta ID", http.StatusBadRequest)
+            return
+        }
+        id, err := strconv.Atoi(path)
+        if err != nil {
+            http.Error(w, "ID inválido", http.StatusBadRequest)
+            return
+        }
+        deleteProceso(w, r, int32(id))
+        return
         
     default:
         // Si no es OPTIONS y no es ninguno de los métodos permitidos, devuelve 405.
@@ -99,13 +112,10 @@ func listProcesos(w http.ResponseWriter, r *http.Request) {
 	if procesos == nil {
 		procesos = []db.Proceso{}
 	}
-    
-    if r.Header.Get("HX-Request") == "true" {
-        views.ListarProcesos(procesos).Render(context.Background(), w)
-        return
-    }
 
-    views.StaticLayout( views.ListarProcesos(procesos)).Render(context.Background(), w)
+    views.ListarProcesos(procesos).Render(context.Background(), w)
+    return
+
 }
 
 
@@ -148,8 +158,21 @@ func createProceso(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Error interno al guardar el proceso. Ver logs del servidor.", http.StatusInternalServerError)
         return
     }
-    
-    listProcesos(w, r);
+    w.Header().Set("HX-Redirect", "/")
+    w.WriteHeader(http.StatusOK)
+    return
+    //listProcesos(w, r);
     //http.Redirect(w, r, "/", http.StatusSeeOther) Elimina la redireccion 
     
+}
+func deleteProceso (w http.ResponseWriter, r *http.Request, id int32) {
+    err := queries.DeleteProcess(context.Background(), id)
+    //Si no hubo error SQL → error = nil
+    //Si la query falló → error != nil
+    if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	} 
+     w.WriteHeader(http.StatusOK)
+     
 }

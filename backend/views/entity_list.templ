@@ -1,9 +1,12 @@
-
 package views
-import "scheduler_os/backend/db/sqlc"
+
+import (
+    "strconv"
+    "scheduler_os/backend/db/sqlc"
+)
 
 templ ListarProcesos(procesos []db.Proceso) {
-    <section>
+    <section id="lista-procesos" >
             if len(procesos) == 0{
                 <h3> No hay procesos </h3>
             } else {
@@ -17,9 +20,18 @@ templ ListarProcesos(procesos []db.Proceso) {
                             <li>Burst Time:{ proceso.BurstTime }</li>
                             <li>Arrival Time{ proceso.ArrivalTime }</li>
                             <li>Estado: { proceso.Estado }</li>
+                                <button 
+                                    hx-delete={"/procesos/" + strconv.Itoa(int(proceso.ID))} 
+                                    hx-target="closest article" 
+                                    hx-swap="delete"
+                                > 
+                                    Borrar
+                                </button> <!--El  hx-swap debe ser delete segun dice la documenacion, usando outerHTML se duplicaba el layout-->
                         </ul>
+
                     </article>
                 }
             }
     </section>
+                      
 }
