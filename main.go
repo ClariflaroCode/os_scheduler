@@ -30,10 +30,6 @@ func main() {
     queries = db.New(conn)
 	mux := http.NewServeMux()
 
-	/*mux.HandleFunc("/procesos", func(w http.ResponseWriter, r *http.Request) {
-
-		handleProcesos(w, r)
-	})*/
     mux.HandleFunc("/procesos", handleProcesos)
     mux.HandleFunc("/procesos/", handleProcesos)
 
@@ -45,6 +41,7 @@ func main() {
     mux.HandleFunc("/estadisticas", showEstadisticas)
 
     mux.HandleFunc("/algoritmo", showAlgoritmoForm)
+    mux.HandleFunc("/ejecutar", ejecutarSimulacion)
     mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./backend/static"))))
     err = http.ListenAndServe(":8080", mux)
     if err != nil {
@@ -198,4 +195,10 @@ func deleteProceso (w http.ResponseWriter, r *http.Request, id int32) {
     w.WriteHeader(http.StatusOK) 
 
      
+}
+
+// Ejecutar simulacion
+func ejecutarSimulacion(w http.ResponseWriter, r *http.Request) {
+    
+    fmt.Fprintln(w, "Simulación ejecutada")
 }

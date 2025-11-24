@@ -29,7 +29,7 @@ func EstadisticasView() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"estadisticas\"><h2>Estadísticas de la Simulación</h2><div class=\"estadistica-item\"><h3>Tiempo de procesamiento</h3><p>Aquí se mostrará el tiempo promedio de procesamiento.</p></div><div class=\"estadistica-item\"><h3>Context switches</h3><p>Aquí se mostrará el número de cambios de contexto durante la simulación.</p></div><div class=\"estadistica-item\"><h3>Algoritmo</h3><p>Aquí se mostrará el algoritmo utilizado durante la simulación.</p></div></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"estadisticas\"><h2>Estadísticas de la Simulación</h2><section class=\"estadistica-item\"><h3>Tiempo de procesamiento</h3><p>Aquí se mostrará el tiempo promedio de procesamiento.</p></section><section class=\"estadistica-item\"><h3>Context switches</h3><p>Aquí se mostrará el número de cambios de contexto durante la simulación.</p></section><section class=\"estadistica-item\"><h3>Algoritmo</h3><p>Aquí se mostrará el algoritmo utilizado durante la simulación.</p></section></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
