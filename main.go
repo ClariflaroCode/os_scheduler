@@ -30,10 +30,13 @@ func main() {
     queries = db.New(conn)
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/procesos", func(w http.ResponseWriter, r *http.Request) {
+	/*mux.HandleFunc("/procesos", func(w http.ResponseWriter, r *http.Request) {
 
 		handleProcesos(w, r)
-	})
+	})*/
+    mux.HandleFunc("/procesos", handleProcesos)
+    mux.HandleFunc("/procesos/", handleProcesos)
+
 
 
 	mux.HandleFunc("/", handleHome)
@@ -158,8 +161,9 @@ func createProceso(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Error interno al guardar el proceso. Ver logs del servidor.", http.StatusInternalServerError)
         return
     }
-    w.Header().Set("HX-Redirect", "/")
-    w.WriteHeader(http.StatusOK)
+    listProcesos(w, r)
+    //w.Header().Set("HX-Redirect", "/")
+    //w.WriteHeader(http.StatusOK)
     return
     //listProcesos(w, r);
     //http.Redirect(w, r, "/", http.StatusSeeOther) Elimina la redireccion 
@@ -173,6 +177,9 @@ func deleteProceso (w http.ResponseWriter, r *http.Request, id int32) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	} 
-     w.WriteHeader(http.StatusOK)
+    log.Println("BORRANDO ID:", id)
+
+    w.WriteHeader(http.StatusOK) 
+
      
 }

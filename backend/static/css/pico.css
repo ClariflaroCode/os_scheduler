@@ -152,13 +152,13 @@ h3 {
     border-radius: 5px;
     width: 80%;
 }
-#listado {
+#listado-procesos {
     display: flex;
     flex-direction: column;
     gap: 1rem;
     align-items: center;
     justify-content: center;
 }
-#listado .card {
+#listado-procesos .card {
     width: 50%;
 }

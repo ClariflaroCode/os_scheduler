@@ -29,7 +29,8 @@ SET nombre=$2,
     prioridad=$3,
     burst_time=$4,
     arrival_time=$5, 
-    estado=$6
+    estado=$6,
+    id_simulacion=$7
 WHERE id = $1;
 
 -- name: DeleteProcess :exec

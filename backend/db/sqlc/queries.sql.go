@@ -130,17 +130,19 @@ SET nombre=$2,
     prioridad=$3,
     burst_time=$4,
     arrival_time=$5, 
-    estado=$6
+    estado=$6,
+    id_simulacion=$7
 WHERE id = $1
 `
 
 type UpdateProcessParams struct {
-	ID          int32  `json:"id"`
-	Nombre      string `json:"nombre"`
-	Prioridad   int32  `json:"prioridad"`
-	BurstTime   int32  `json:"burst_time"`
-	ArrivalTime int32  `json:"arrival_time"`
-	Estado      string `json:"estado"`
+	ID           int32  `json:"id"`
+	Nombre       string `json:"nombre"`
+	Prioridad    int32  `json:"prioridad"`
+	BurstTime    int32  `json:"burst_time"`
+	ArrivalTime  int32  `json:"arrival_time"`
+	Estado       string `json:"estado"`
+	IDSimulacion int32  `json:"id_simulacion"`
 }
 
 func (q *Queries) UpdateProcess(ctx context.Context, arg UpdateProcessParams) error {
@@ -151,6 +153,7 @@ func (q *Queries) UpdateProcess(ctx context.Context, arg UpdateProcessParams) er
 		arg.BurstTime,
 		arg.ArrivalTime,
 		arg.Estado,
+		arg.IDSimulacion,
 	)
 	return err
 }
