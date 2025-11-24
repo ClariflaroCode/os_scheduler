@@ -15,10 +15,10 @@ templ StaticLayout(contenido templ.Component) {
                 <h1>Scheduler Web Interface</h1>
                 <nav>
                     <ul>
-                        <li><a href="/listado" class="menu-option">Procesos</a></li>
-                        <li><a id="btn-add" class="menu-option" hx-get="/agregar" hx-target="#contenido" hx-swap="outerHTML">Agregar Proceso</a></li>
-                        <li><a href="/algoritmo" class="menu-option">Elegir Algoritmo</a></li>
-                        <li><a href="/estadisticas" class="menu-option">Estadísticas</a></li> 
+                        <li><a hx-get="/procesos" hx-target="#contenido" hx-swap="innerHTML" class="menu-option">Procesos</a></li>
+                        <li><a id="btn-add" class="menu-option" hx-get="/agregar" hx-target="#contenido" hx-swap="innerHTML">Agregar Proceso</a></li>
+                        <li><a hx-get="/algoritmo" hx-target="#contenido" hx-swap="innerHTML" class="menu-option">Elegir Algoritmo</a></li>
+                        <li><a hx-get="/estadisticas" hx-target="#contenido" hx-swap="innerHTML" class="menu-option">Estadísticas</a></li>
                     </ul>
                 </nav>
             </header>

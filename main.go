@@ -130,7 +130,7 @@ func listProcesos(w http.ResponseWriter, r *http.Request) {
 		procesos = []db.Proceso{}
 	}
 
-    views.ListarProcesos(procesos, "").Render(context.Background(), w)
+    views.HomeView(procesos).Render(context.Background(), w)
     return
 
 }
