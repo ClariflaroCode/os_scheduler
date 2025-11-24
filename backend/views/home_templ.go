@@ -35,7 +35,7 @@ func HomeView(procesos []db.Proceso) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = CrearGrafo().Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = CrearGrafo(procesos).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -43,7 +43,7 @@ func HomeView(procesos []db.Proceso) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = ListarProcesos(procesos).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = ListarProcesos(procesos, "").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

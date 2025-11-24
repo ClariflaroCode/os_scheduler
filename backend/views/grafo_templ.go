@@ -8,7 +8,11 @@ package views
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func CrearGrafo() templ.Component {
+import (
+	"scheduler_os/backend/db/sqlc"
+)
+
+func CrearGrafo(procesos []db.Proceso) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -29,7 +33,7 @@ func CrearGrafo() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"grafo\"><section class=\"card-container\"><article class=\"card\"><header class=\"card-header\"><h3>New</h3></header><footer class=\"card-footer\"><ul><li><a href=\"/procesos?estado=new\" class=\"button\">Ver más</a></li></ul></footer></article><div class=\"ready-vs-waiting\"><article class=\"card\"><header class=\"card-header\"><h3>Ready</h3></header><footer class=\"card-footer\"><ul><li><a href=\"/procesos?estado=ready\" class=\"button\">Ver más</a></li></ul></footer></article><article class=\"card\"><header class=\"card-header\"><h3>Waiting</h3></header><footer class=\"card-footer\"><ul><li><a href=\"/procesos?estado=waiting\" class=\"button\">Ver más</a></li></ul></footer></article></div><article class=\"card\"><header class=\"card-header\"><h3>Running</h3></header><footer class=\"card-footer\"><ul><li><a href=\"/procesos?estado=running\" class=\"button\">Ver más</a></li></ul></footer></article><article class=\"card\"><header class=\"card-header\"><h3>Terminated</h3></header><footer class=\"card-footer\"><ul><li><a href=\"/procesos?estado=terminated\" class=\"button\">Ver más</a></li></ul></footer></article></section><section class=\"start-section\"><a href=\"/ejecutar_simulacion\" class=\"button\" id=\"comenzar\">Comenzar</a></section></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"grafo\"><section class=\"card-container\"><article class=\"card\"><header class=\"card-header\"><h3>New</h3></header><footer class=\"card-footer\"><ul><li><a hx-get=\"/procesos?estado=new\" hx-target=\"#listado-procesos\" class=\"button\">Ver más</a></li></ul></footer></article><div class=\"ready-vs-waiting\"><article class=\"card\"><header class=\"card-header\"><h3>Ready</h3></header><footer class=\"card-footer\"><ul><li><a hx-get=\"/procesos?estado=ready\" hx-target=\"#listado-procesos\" class=\"button\">Ver más</a></li></ul></footer></article><article class=\"card\"><header class=\"card-header\"><h3>Waiting</h3></header><footer class=\"card-footer\"><ul><li><a hx-get=\"/procesos?estado=waiting\" hx-target=\"#listado-procesos\" class=\"button\">Ver más</a></li></ul></footer></article></div><article class=\"card\"><header class=\"card-header\"><h3>Running</h3></header><footer class=\"card-footer\"><ul><li><a hx-get=\"/procesos?estado=running\" hx-target=\"#listado-procesos\" class=\"button\">Ver más</a></li></ul></footer></article><article class=\"card\"><header class=\"card-header\"><h3>Terminated</h3></header><footer class=\"card-footer\"><ul><li><a hx-get=\"/procesos?estado=terminated\" hx-target=\"#listado-procesos\" class=\"button\">Ver más</a></li></ul></footer></article></section><section class=\"start-section\"><a href=\"/ejecutar_simulacion\" class=\"button\" id=\"comenzar\">Comenzar</a></section></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

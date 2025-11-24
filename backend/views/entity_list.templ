@@ -5,8 +5,13 @@ import (
     "scheduler_os/backend/db/sqlc"
 )
 
-templ ListarProcesos(procesos []db.Proceso) {
+templ ListarProcesos(procesos []db.Proceso, estado string) {
     <section id="listado-procesos" >
+            if estado != "" {
+                <h2> Procesos en estado: { estado } </h2>
+            } else {
+                <h2> Listado de Procesos </h2>
+            }
             if len(procesos) == 0{
                 <h3> No hay procesos </h3>
             } else {

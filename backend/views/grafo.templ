@@ -1,6 +1,8 @@
 package views 
-
-templ CrearGrafo() {
+import (
+    "scheduler_os/backend/db/sqlc"
+)
+templ CrearGrafo(procesos []db.Proceso) {
     <section id="grafo">
         <section class="card-container">
 
@@ -9,7 +11,7 @@ templ CrearGrafo() {
                 <footer class="card-footer">
                     <ul>
                         <li>
-                            <a href="/procesos?estado=new" class="button">Ver más</a>
+                            <a hx-get="/procesos?estado=new" hx-target="#listado-procesos" class="button">Ver más</a>
                         </li>
                 
                     </ul>
@@ -22,7 +24,7 @@ templ CrearGrafo() {
                     <footer class="card-footer">
                         <ul>
                             <li>
-                                <a href="/procesos?estado=ready" class="button">Ver más</a>
+                                <a hx-get="/procesos?estado=ready" hx-target="#listado-procesos" class="button">Ver más</a>
                             </li>
                     
                         </ul>
@@ -33,7 +35,7 @@ templ CrearGrafo() {
                     <footer class="card-footer">
                         <ul>
                             <li>
-                                <a href="/procesos?estado=waiting" class="button">Ver más</a>
+                                <a hx-get="/procesos?estado=waiting" hx-target="#listado-procesos" class="button">Ver más</a>
                             </li>
                         
                         </ul>
@@ -45,7 +47,7 @@ templ CrearGrafo() {
                 <footer class="card-footer">
                     <ul>
                         <li>
-                            <a href="/procesos?estado=running" class="button">Ver más</a>
+                            <a hx-get="/procesos?estado=running" hx-target="#listado-procesos" class="button">Ver más</a>
                         </li>
                     
                     </ul>
@@ -56,7 +58,7 @@ templ CrearGrafo() {
                 <footer class="card-footer">
                     <ul>
                         <li>
-                            <a href="/procesos?estado=terminated" class="button">Ver más</a>
+                            <a hx-get="/procesos?estado=terminated" hx-target="#listado-procesos" class="button">Ver más</a>
                         </li>
                  
                     </ul>

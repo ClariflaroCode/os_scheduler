@@ -124,6 +124,44 @@ func (q *Queries) ListProcess(ctx context.Context) ([]Proceso, error) {
 	return items, nil
 }
 
+const listProcessByEstado = `-- name: ListProcessByEstado :many
+SELECT id, nombre, prioridad, burst_time, arrival_time, estado, id_simulacion
+FROM procesos
+WHERE estado = $1
+ORDER BY id
+`
+
+func (q *Queries) ListProcessByEstado(ctx context.Context, estado string) ([]Proceso, error) {
+	rows, err := q.db.QueryContext(ctx, listProcessByEstado, estado)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Proceso
+	for rows.Next() {
+		var i Proceso
+		if err := rows.Scan(
+			&i.ID,
+			&i.Nombre,
+			&i.Prioridad,
+			&i.BurstTime,
+			&i.ArrivalTime,
+			&i.Estado,
+			&i.IDSimulacion,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateProcess = `-- name: UpdateProcess :exec
 UPDATE procesos
 SET nombre=$2,

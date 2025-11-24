@@ -8,6 +8,7 @@ templ StaticLayout(contenido templ.Component) {
             <title>Scheduler Web Interface</title>
             <link rel="stylesheet" href="/static/css/pico.css">
             <script src="https://unpkg.com/htmx.org@1.9.10"></script> <!--Agrega htmx-->
+            
         </head>
         <body>
             <header class="encabezado">
@@ -15,13 +16,13 @@ templ StaticLayout(contenido templ.Component) {
                 <nav>
                     <ul>
                         <li><a href="/listado" class="menu-option">Procesos</a></li>
-                        <li><a id="btn-add" class="menu-option" href="/agregar">Agregar Proceso</a></li>
+                        <li><a id="btn-add" class="menu-option" hx-get="/agregar" hx-target="#contenido" hx-swap="outerHTML">Agregar Proceso</a></li>
                         <li><a href="/algoritmo" class="menu-option">Elegir Algoritmo</a></li>
                         <li><a href="/estadisticas" class="menu-option">Estadísticas</a></li> 
                     </ul>
                 </nav>
             </header>
-            <main>
+            <main id="contenido">
                     @contenido
 
             </main>

@@ -23,6 +23,12 @@ SELECT *
 FROM procesos
 ORDER BY id;
 
+-- name: ListProcessByEstado :many
+SELECT *
+FROM procesos
+WHERE estado = $1
+ORDER BY id;
+
 -- name: UpdateProcess :exec
 UPDATE procesos
 SET nombre=$2,

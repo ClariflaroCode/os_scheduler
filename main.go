@@ -54,7 +54,7 @@ func main() {
 
 }
 func showCreateForm(w http.ResponseWriter, r *http.Request) {
-    views.StaticLayout( views.AgregarForm()).Render(context.Background(), w)
+    views.AgregarForm().Render(context.Background(), w)
 }
 func handleHome(w http.ResponseWriter, r *http.Request) {
     
@@ -78,10 +78,15 @@ func handleProcesos(w http.ResponseWriter, r *http.Request) {
 
     switch r.Method {            
     case "GET":
-        if path == "" {
-            listProcesos(w, r)
+        estado := r.URL.Query().Get("estado")
+
+        if estado != "" {
+            getProcesoByEstado(w, r, estado)
             return
         }
+
+        listProcesos(w, r)
+
         return
 
     case "POST":
@@ -105,6 +110,15 @@ func handleProcesos(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
     }
 }
+func getProcesoByEstado(w http.ResponseWriter, r *http.Request, estado string) {
+    procesos, err := queries.ListProcessByEstado(context.Background(), estado)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    views.ListarProcesos(procesos, estado).Render(context.Background(), w)
+}
+
 func listProcesos(w http.ResponseWriter, r *http.Request) {
 	procesos, err := queries.ListProcess(context.Background())
 	if err != nil {
@@ -116,7 +130,7 @@ func listProcesos(w http.ResponseWriter, r *http.Request) {
 		procesos = []db.Proceso{}
 	}
 
-    views.ListarProcesos(procesos).Render(context.Background(), w)
+    views.ListarProcesos(procesos, "").Render(context.Background(), w)
     return
 
 }
@@ -131,7 +145,6 @@ func createProceso(w http.ResponseWriter, r *http.Request) {
 
     toInt32 := func(key string) (int32, error) {
         valStr := r.FormValue(key)
-        // Intentamos convertir el string a un entero de 32 bits
         valInt, err := strconv.ParseInt(valStr, 10, 32) 
         if err != nil {
             return 0, fmt.Errorf("el campo '%s' es inválido o está vacío", key)
@@ -162,10 +175,7 @@ func createProceso(w http.ResponseWriter, r *http.Request) {
         return
     }
     listProcesos(w, r)
-    //w.Header().Set("HX-Redirect", "/")
-    //w.WriteHeader(http.StatusOK)
     return
-    //listProcesos(w, r);
     //http.Redirect(w, r, "/", http.StatusSeeOther) Elimina la redireccion 
     
 }
