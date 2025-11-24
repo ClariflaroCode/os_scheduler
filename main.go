@@ -44,7 +44,7 @@ func main() {
     mux.HandleFunc("/agregar", showCreateForm)
 //    mux.HandleFunc("/estadisticas", showEstadisticas)
 
-  //  mux.HandleFunc("/algoritmo", showAlgoritmoForm)
+    mux.HandleFunc("/algoritmo", showAlgoritmoForm)
     mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./backend/static"))))
     err = http.ListenAndServe(":8080", mux)
     if err != nil {
@@ -52,6 +52,9 @@ func main() {
     }
 
 
+}
+func showAlgoritmoForm(w http.ResponseWriter, r *http.Request) {
+    views.AgregarSimulacion().Render(context.Background(), w)
 }
 func showCreateForm(w http.ResponseWriter, r *http.Request) {
     views.AgregarForm().Render(context.Background(), w)
