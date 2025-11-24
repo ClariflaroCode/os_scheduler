@@ -42,7 +42,7 @@ func main() {
 	mux.HandleFunc("/", handleHome)
     
     mux.HandleFunc("/agregar", showCreateForm)
-//    mux.HandleFunc("/estadisticas", showEstadisticas)
+    mux.HandleFunc("/estadisticas", showEstadisticas)
 
     mux.HandleFunc("/algoritmo", showAlgoritmoForm)
     mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./backend/static"))))
@@ -55,6 +55,9 @@ func main() {
 }
 func showAlgoritmoForm(w http.ResponseWriter, r *http.Request) {
     views.AgregarSimulacion().Render(context.Background(), w)
+}
+func showEstadisticas(w http.ResponseWriter, r *http.Request) {
+    views.EstadisticasView().Render(context.Background(), w)
 }
 func showCreateForm(w http.ResponseWriter, r *http.Request) {
     views.AgregarForm().Render(context.Background(), w)
