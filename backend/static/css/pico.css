@@ -122,20 +122,7 @@ h3 {
 .button:active, #comenzar:active {
     background-color: var(--primary-color);
 }
-#dialog-section {
 
-}
-
-#modal {
-    padding: 2rem;
-    border: 1px solid  var(--secondary-color);
-    border-radius: 10px;
-    top: 20%;
-    left: 30%;
-    right: 30%;
-    bottom: 30%;
-    width: 50rem;
-}
 #form-header {
     display: flex;
     justify-content: flex-end;

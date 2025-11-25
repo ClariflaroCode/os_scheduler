@@ -39,7 +39,7 @@ func main() {
     
     mux.HandleFunc("/agregar", showCreateForm)
     mux.HandleFunc("/estadisticas", showEstadisticas)
-
+    mux.HandleFunc("/simulacionForm", crearSimulacion)
     mux.HandleFunc("/algoritmo", showAlgoritmoForm)
     mux.HandleFunc("/ejecutar", ejecutarSimulacion)
     mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./backend/static"))))
@@ -52,6 +52,10 @@ func main() {
 }
 func showAlgoritmoForm(w http.ResponseWriter, r *http.Request) {
     views.AgregarSimulacion().Render(context.Background(), w)
+}
+func crearSimulacion(w http.ResponseWriter, r *http.Request) {
+    //Debo guardar en una tabla simulacion los parametros creados por el usuario para la simulacion actual, vease algoritmo, quantum si corresponde, etc.
+
 }
 func showEstadisticas(w http.ResponseWriter, r *http.Request) {
     views.EstadisticasView().Render(context.Background(), w)
@@ -128,10 +132,10 @@ func listProcesos(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
+/*
 	if procesos == nil {
 		procesos = []db.Proceso{}
-	}
+	}*/
 
     views.HomeView(procesos).Render(context.Background(), w)
     return
@@ -199,6 +203,116 @@ func deleteProceso (w http.ResponseWriter, r *http.Request, id int32) {
 
 // Ejecutar simulacion
 func ejecutarSimulacion(w http.ResponseWriter, r *http.Request) {
-    
+    //obtengo los procesos en estado "new" que son los creados por el usuario
+    newQueue, err := queries.ListProcessByEstado(context.Background(), "new")
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    //Busco los parametros de la ultima simulacion creada por el usuario 
+
+    //TO-DO crear la tabla simulacion, crear una query que devuelva la ultima simulacion creada, otra que cree una simulacion nueva y otra query que devuelva todas las simulaciones. 
+    simulacion, err := queries.ListSimulacion(context.Background())
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    //Aquí iria la llamada a la funcion que ejecuta la simulacion con los procesos new 
+    switch simulacion[len(simulacion)-1].Algoritmo {
+    case "FCFS":
+        log.Println("Ejecutando FCFS")
+        fcfs(newQueue)
+    case "SJF":
+        log.Println("Ejecutando SJF")
+        //sjf(newQueue)
+    case "RR":
+        log.Println("Ejecutando RR con quantum:", simulacion[len(simulacion)-1].Quantum)
+        //rr(newQueue, simulacion[len(simulacion)-1].Quantum)
+    default:
+        http.Error(w, "Algoritmo no soportado", http.StatusBadRequest)
+        return
+    }
+
+
+ 
+
     fmt.Fprintln(w, "Simulación ejecutada")
 }
+func fcfs(newQueue []db.Proceso) {
+    //Funcion que ejecuta el algoritmo FCFS
+    //Acá recibo la cola new y la voy procesando, miro los arrival time, se simulan los ciclos de reloj, y cuando un proceso llega a su arrival time se cambia su estado a ready
+    clock := 0 //Empiezo el ciclo de reloj en 0
+
+    //Mientras que haya procesos en new o ready o running o waiting debo seguir simulando. La simulacion termina cuando todos los procesos estan en terminated. 
+    readyQueue := []db.Proceso{}
+    runningProceso := (*db.Proceso)(nil) //Puntero a proceso en estado running, inicialmente nil
+    waitingQueue := []db.Proceso{}
+    terminatedQueue := []db.Proceso{}
+
+
+
+    //Mientras que haya procesos en new o ready o running o waiting debo seguir simulando. La simulacion termina cuando todos los procesos estan en terminated.
+    for len(newQueue) > 0 || len(readyQueue) > 0 || runningProceso != nil || len(waitingQueue) > 0 {
+        for i := 0; i < len(newQueue); i++ {
+            if newQueue[i].ArrivalTime == int32(clock) { 
+                //updateProcesoEstado(newQueue[i].ID, "ready") //actualizo en la DB el estado del proceso
+                newQueue[i].Estado = "ready"
+                readyQueue = append(readyQueue, newQueue[i])
+            }
+        } 
+        //Tomo el primer elemento de la lista de ready y lo paso a running si está disponible para ejecutar
+        if len(readyQueue) > 0 && runningProceso == nil {
+            runningProceso = &readyQueue[0]
+            runningProceso.Estado = "running"
+            //updateProcesoEstado(readyQueue[0].ID, "running") //actualizo en la DB el estado del proceso
+            readyQueue = readyQueue[1:] //elimino el primer elemento de la lista de ready, la ready queue se volvio la ready queue 
+            // empezando desde el segundo elemento hasta el final por eso 1:. En go la longitud se indica con min:max
+
+
+
+        }
+        if runningProceso != nil {
+            if runningProceso.BurstTime == 0 {
+                //updateProcesoEstado(runningProceso.ID, "terminated") //actualizo en la DB el estado del proceso
+                runningProceso.Estado = "terminated"
+                terminatedQueue = append(terminatedQueue, *runningProceso)
+                runningProceso = nil //libero la CPU
+            } else {
+                runningProceso.BurstTime--
+            }
+        }
+        clock++
+
+    }
+    calcularEstadisticasSimulacion(terminatedQueue) //Esto calcula las estadisticas de la simulacion y las guarda en la DB. 
+    //Imprimir que la simulacion finalizó.
+    fmt.Println("La simulación ha finalizado.")
+}
+func calcularEstadisticasSimulacion(terminatedQueue []db.Proceso) {
+    //Funcion que calcula las estadisticas de la simulacion y las guarda en la DB
+    //TO-DO calcular avg waiting time, avg turnaround time, avg response time, cpu utilization, throughput
+    //y guardar en la tabla estadisticas_simulacion
+}
+
+func runningStateFunc() {
+    //Funcion que maneja los procesos en estado running
+    //Acá recibo la cola running y la voy procesando, simulando los ciclos de reloj, y cuando un proceso termina su burst time se cambia su estado a terminated
+    //Aca si es RR y el proceso agota su quantum se cambia su estado a Ready
+}
+func waitingStateFunc() {
+    //Funcion que cambia el estado de los procesos de waiting a ready
+    //Acá recibo la cola waiting y la voy procesando, simulando los ciclos de reloj, y cuando un proceso agota su tiempo de espera se cambia su estado a ready
+}
+
+/*
+func updateProcesoEstado(id int32, newEstado string) error {
+    //TO-DO agregar query para actualizar el estado del proceso
+    err := queries.UpdateProcesoEstado(context.Background(), db.UpdateProcesoEstadoParams{
+        ID:     id,
+        Estado: newEstado,
+    })
+    return err
+} 
+    NO, no tiene sentido que por cada cambio de estado haga una llamada a la DB. 
+*/
