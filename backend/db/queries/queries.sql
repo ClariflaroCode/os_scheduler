@@ -42,3 +42,38 @@ WHERE id = $1;
 -- name: DeleteProcess :exec
 DELETE FROM procesos
 WHERE id= $1;
+
+
+-- name: CreateSimulacion :one
+INSERT INTO simulaciones (nombre, process_time, context_switches, dispatch_latency, average_turnaround_time, average_waiting_time, average_throughput, algoritmo, quantum, prioridad)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+RETURNING *;
+-- name: GetSimulacion :one
+SELECT *
+FROM simulaciones
+WHERE id = $1;
+
+-- name: ListSimulacion :many
+SELECT *
+FROM simulaciones
+ORDER BY id;
+
+-- name: UpdateSimulacion :exec
+UPDATE simulaciones
+SET nombre=$2,
+    process_time=$3,
+    context_switches=$4,
+    dispatch_latency=$5,
+    average_turnaround_time=$6,
+    average_waiting_time=$7,
+    average_throughput=$8,
+    algoritmo=$9,
+    quantum=$10,
+    prioridad=$11
+WHERE id = $1;
+
+-- name: GetLastSimulacion :one
+SELECT *
+FROM simulaciones
+ORDER BY id DESC
+LIMIT 1;

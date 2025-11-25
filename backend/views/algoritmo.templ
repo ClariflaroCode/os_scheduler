@@ -1,32 +1,24 @@
 package views
 
 templ AgregarSimulacion()    {
-        <form action="/simulacionForm" method="post" class="form">
+        <form action="/simulacion" class="form" hx-target="#contenido" hx-swap="innerHTML" hx-post="/simulacion">
 
             <fieldset>
                 <legend>Nueva simulacion</legend>
                 
                 <label for="nombre">Nombre de la simulacion</label>
                 <input type="text" name="nombre" id="nombre" placeholder="Nombre de la simulacion">
-                
-                <label for="process_time">Process time</label>
-                <input type="number" name="process_time" id="process_time" placeholder="Ingrese el process time">
-
-                <label for="context_switches">Context switches</label>
-                <input type="number" name="context_switches" id="context_switches" placeholder="Ingrese el context_switch">
 
                 <label for="algoritmo">Elegir el algoritmo de planificacion</label>
-                <select id="algoritmo" name="algoritmo">
+                <select id="algoritmo" name="algoritmo" hx-get="/algoritmo/opciones" hx-target="#opciones-extra" hx-trigger="change"  hx-swap="innerHTML">
                     <option value="first_come_first_serve">First come First Serve</option>
                     <option value="round_robin">Round Robin</option>
                     <option value="priority">Prioridad</option>
                 </select>
-                
-                <label for="quantum" id="quantum-label">
-                    <h5>Quantum</h5>
-                    <input type="number" name="quantum" id="quantum" placeholder="Ingrese el quantum">
-                
-                </label>
+                <div id="opciones-extra">
+
+                </div>
+              
                 <button type="submit" class="button">Enviar</button>
             </fieldset>
         </form>

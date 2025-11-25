@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createProcess = `-- name: CreateProcess :one
@@ -56,6 +57,55 @@ func (q *Queries) CreateProcess(ctx context.Context, arg CreateProcessParams) (P
 	return i, err
 }
 
+const createSimulacion = `-- name: CreateSimulacion :one
+INSERT INTO simulaciones (nombre, process_time, context_switches, dispatch_latency, average_turnaround_time, average_waiting_time, average_throughput, algoritmo, quantum, prioridad)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+RETURNING id, nombre, process_time, context_switches, dispatch_latency, average_turnaround_time, average_waiting_time, average_throughput, algoritmo, quantum, prioridad
+`
+
+type CreateSimulacionParams struct {
+	Nombre                string        `json:"nombre"`
+	ProcessTime           int32         `json:"process_time"`
+	ContextSwitches       int32         `json:"context_switches"`
+	DispatchLatency       int32         `json:"dispatch_latency"`
+	AverageTurnaroundTime int32         `json:"average_turnaround_time"`
+	AverageWaitingTime    int32         `json:"average_waiting_time"`
+	AverageThroughput     int32         `json:"average_throughput"`
+	Algoritmo             string        `json:"algoritmo"`
+	Quantum               sql.NullInt32 `json:"quantum"`
+	Prioridad             sql.NullInt32 `json:"prioridad"`
+}
+
+func (q *Queries) CreateSimulacion(ctx context.Context, arg CreateSimulacionParams) (Simulacione, error) {
+	row := q.db.QueryRowContext(ctx, createSimulacion,
+		arg.Nombre,
+		arg.ProcessTime,
+		arg.ContextSwitches,
+		arg.DispatchLatency,
+		arg.AverageTurnaroundTime,
+		arg.AverageWaitingTime,
+		arg.AverageThroughput,
+		arg.Algoritmo,
+		arg.Quantum,
+		arg.Prioridad,
+	)
+	var i Simulacione
+	err := row.Scan(
+		&i.ID,
+		&i.Nombre,
+		&i.ProcessTime,
+		&i.ContextSwitches,
+		&i.DispatchLatency,
+		&i.AverageTurnaroundTime,
+		&i.AverageWaitingTime,
+		&i.AverageThroughput,
+		&i.Algoritmo,
+		&i.Quantum,
+		&i.Prioridad,
+	)
+	return i, err
+}
+
 const deleteProcess = `-- name: DeleteProcess :exec
 DELETE FROM procesos
 WHERE id= $1
@@ -64,6 +114,32 @@ WHERE id= $1
 func (q *Queries) DeleteProcess(ctx context.Context, id int32) error {
 	_, err := q.db.ExecContext(ctx, deleteProcess, id)
 	return err
+}
+
+const getLastSimulacion = `-- name: GetLastSimulacion :one
+SELECT id, nombre, process_time, context_switches, dispatch_latency, average_turnaround_time, average_waiting_time, average_throughput, algoritmo, quantum, prioridad
+FROM simulaciones
+ORDER BY id DESC
+LIMIT 1
+`
+
+func (q *Queries) GetLastSimulacion(ctx context.Context) (Simulacione, error) {
+	row := q.db.QueryRowContext(ctx, getLastSimulacion)
+	var i Simulacione
+	err := row.Scan(
+		&i.ID,
+		&i.Nombre,
+		&i.ProcessTime,
+		&i.ContextSwitches,
+		&i.DispatchLatency,
+		&i.AverageTurnaroundTime,
+		&i.AverageWaitingTime,
+		&i.AverageThroughput,
+		&i.Algoritmo,
+		&i.Quantum,
+		&i.Prioridad,
+	)
+	return i, err
 }
 
 const getProcess = `-- name: GetProcess :one
@@ -83,6 +159,31 @@ func (q *Queries) GetProcess(ctx context.Context, id int32) (Proceso, error) {
 		&i.ArrivalTime,
 		&i.Estado,
 		&i.IDSimulacion,
+	)
+	return i, err
+}
+
+const getSimulacion = `-- name: GetSimulacion :one
+SELECT id, nombre, process_time, context_switches, dispatch_latency, average_turnaround_time, average_waiting_time, average_throughput, algoritmo, quantum, prioridad
+FROM simulaciones
+WHERE id = $1
+`
+
+func (q *Queries) GetSimulacion(ctx context.Context, id int32) (Simulacione, error) {
+	row := q.db.QueryRowContext(ctx, getSimulacion, id)
+	var i Simulacione
+	err := row.Scan(
+		&i.ID,
+		&i.Nombre,
+		&i.ProcessTime,
+		&i.ContextSwitches,
+		&i.DispatchLatency,
+		&i.AverageTurnaroundTime,
+		&i.AverageWaitingTime,
+		&i.AverageThroughput,
+		&i.Algoritmo,
+		&i.Quantum,
+		&i.Prioridad,
 	)
 	return i, err
 }
@@ -162,6 +263,47 @@ func (q *Queries) ListProcessByEstado(ctx context.Context, estado string) ([]Pro
 	return items, nil
 }
 
+const listSimulacion = `-- name: ListSimulacion :many
+SELECT id, nombre, process_time, context_switches, dispatch_latency, average_turnaround_time, average_waiting_time, average_throughput, algoritmo, quantum, prioridad
+FROM simulaciones
+ORDER BY id
+`
+
+func (q *Queries) ListSimulacion(ctx context.Context) ([]Simulacione, error) {
+	rows, err := q.db.QueryContext(ctx, listSimulacion)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Simulacione
+	for rows.Next() {
+		var i Simulacione
+		if err := rows.Scan(
+			&i.ID,
+			&i.Nombre,
+			&i.ProcessTime,
+			&i.ContextSwitches,
+			&i.DispatchLatency,
+			&i.AverageTurnaroundTime,
+			&i.AverageWaitingTime,
+			&i.AverageThroughput,
+			&i.Algoritmo,
+			&i.Quantum,
+			&i.Prioridad,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateProcess = `-- name: UpdateProcess :exec
 UPDATE procesos
 SET nombre=$2,
@@ -192,6 +334,52 @@ func (q *Queries) UpdateProcess(ctx context.Context, arg UpdateProcessParams) er
 		arg.ArrivalTime,
 		arg.Estado,
 		arg.IDSimulacion,
+	)
+	return err
+}
+
+const updateSimulacion = `-- name: UpdateSimulacion :exec
+UPDATE simulaciones
+SET nombre=$2,
+    process_time=$3,
+    context_switches=$4,
+    dispatch_latency=$5,
+    average_turnaround_time=$6,
+    average_waiting_time=$7,
+    average_throughput=$8,
+    algoritmo=$9,
+    quantum=$10,
+    prioridad=$11
+WHERE id = $1
+`
+
+type UpdateSimulacionParams struct {
+	ID                    int32         `json:"id"`
+	Nombre                string        `json:"nombre"`
+	ProcessTime           int32         `json:"process_time"`
+	ContextSwitches       int32         `json:"context_switches"`
+	DispatchLatency       int32         `json:"dispatch_latency"`
+	AverageTurnaroundTime int32         `json:"average_turnaround_time"`
+	AverageWaitingTime    int32         `json:"average_waiting_time"`
+	AverageThroughput     int32         `json:"average_throughput"`
+	Algoritmo             string        `json:"algoritmo"`
+	Quantum               sql.NullInt32 `json:"quantum"`
+	Prioridad             sql.NullInt32 `json:"prioridad"`
+}
+
+func (q *Queries) UpdateSimulacion(ctx context.Context, arg UpdateSimulacionParams) error {
+	_, err := q.db.ExecContext(ctx, updateSimulacion,
+		arg.ID,
+		arg.Nombre,
+		arg.ProcessTime,
+		arg.ContextSwitches,
+		arg.DispatchLatency,
+		arg.AverageTurnaroundTime,
+		arg.AverageWaitingTime,
+		arg.AverageThroughput,
+		arg.Algoritmo,
+		arg.Quantum,
+		arg.Prioridad,
 	)
 	return err
 }

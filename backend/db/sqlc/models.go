@@ -4,6 +4,10 @@
 
 package db
 
+import (
+	"database/sql"
+)
+
 type Proceso struct {
 	ID           int32  `json:"id"`
 	Nombre       string `json:"nombre"`
@@ -12,4 +16,18 @@ type Proceso struct {
 	ArrivalTime  int32  `json:"arrival_time"`
 	Estado       string `json:"estado"`
 	IDSimulacion int32  `json:"id_simulacion"`
+}
+
+type Simulacione struct {
+	ID                    int32         `json:"id"`
+	Nombre                string        `json:"nombre"`
+	ProcessTime           int32         `json:"process_time"`
+	ContextSwitches       int32         `json:"context_switches"`
+	DispatchLatency       int32         `json:"dispatch_latency"`
+	AverageTurnaroundTime int32         `json:"average_turnaround_time"`
+	AverageWaitingTime    int32         `json:"average_waiting_time"`
+	AverageThroughput     int32         `json:"average_throughput"`
+	Algoritmo             string        `json:"algoritmo"`
+	Quantum               sql.NullInt32 `json:"quantum"`
+	Prioridad             sql.NullInt32 `json:"prioridad"`
 }

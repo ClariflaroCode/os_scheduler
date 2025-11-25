@@ -39,9 +39,10 @@ func main() {
     
     mux.HandleFunc("/agregar", showCreateForm)
     mux.HandleFunc("/estadisticas", showEstadisticas)
-    mux.HandleFunc("/simulacionForm", crearSimulacion)
     mux.HandleFunc("/algoritmo", showAlgoritmoForm)
     mux.HandleFunc("/ejecutar", ejecutarSimulacion)
+    mux.HandleFunc("/simulacion", crearSimulacion)
+    mux.HandleFunc("/algoritmo/opciones", OpcionesAlgoritmoHandler) //Para que muestre el input quantum si se selecciona RR
     mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./backend/static"))))
     err = http.ListenAndServe(":8080", mux)
     if err != nil {
@@ -52,11 +53,86 @@ func main() {
 }
 func showAlgoritmoForm(w http.ResponseWriter, r *http.Request) {
     views.AgregarSimulacion().Render(context.Background(), w)
-}
-func crearSimulacion(w http.ResponseWriter, r *http.Request) {
-    //Debo guardar en una tabla simulacion los parametros creados por el usuario para la simulacion actual, vease algoritmo, quantum si corresponde, etc.
 
 }
+func crearSimulacion(w http.ResponseWriter, r *http.Request) {
+
+    if err := r.ParseForm(); err != nil {
+        http.Error(w, "Error al procesar el formulario", http.StatusBadRequest)
+        return
+    }
+
+    var s db.CreateSimulacionParams
+
+    // Campos del formulario
+    s.Nombre = r.FormValue("nombre")
+    algoritmo := r.FormValue("algoritmo")
+
+    switch algoritmo {
+
+    case "first_come_first_serve":
+        s.Algoritmo = "FCFS"
+        s.Quantum = sql.NullInt32{Valid: false}
+
+    case "round_robin":
+        s.Algoritmo = "RR"
+
+        quantumStr := r.FormValue("quantum")
+        quantumInt, err := strconv.Atoi(quantumStr)
+        if err != nil {
+            http.Error(w, "Quantum inválido", http.StatusBadRequest)
+            return
+        }
+
+        s.Quantum = sql.NullInt32{
+            Int32: int32(quantumInt),
+            Valid: true,
+        }
+
+    case "priority":
+        s.Algoritmo = "PRIORITY"
+        prioridadStr := r.FormValue("prioridad")
+        prioridadInt, err := strconv.Atoi(prioridadStr)
+        if err != nil {
+            http.Error(w, "Prioridad inválida", http.StatusBadRequest)
+            return
+        }
+
+        s.Prioridad = sql.NullInt32{
+            Int32: int32(prioridadInt),
+            Valid: true,
+        }
+    default:
+        http.Error(w, "Algoritmo no soportado", http.StatusBadRequest)
+        return
+    }
+
+    // Valores por defecto 
+    s.ProcessTime = 0
+    s.ContextSwitches = 0
+    s.DispatchLatency = 0
+    s.AverageTurnaroundTime = 0
+    s.AverageWaitingTime = 0
+    s.AverageThroughput = 0
+
+    _, err := queries.CreateSimulacion(context.Background(), s)
+    if err != nil {
+        log.Println("Error DB:", err)
+        http.Error(w, "Error al guardar simulación", http.StatusInternalServerError)
+        return
+    }
+    //TO-DO: ver de hacer que el listar procesos directamente siempre llame al view y muestre los procesos 
+    // y el grafo y el listar procesos por estado consulte directamente a las queues.
+    procesos, err := queries.ListProcess(context.Background())
+    if err != nil {
+        http.Error(w, "Error al cargar procesos", http.StatusInternalServerError)
+        return
+    }
+
+    views.HomeView(procesos).Render(context.Background(), w)
+
+}
+
 func showEstadisticas(w http.ResponseWriter, r *http.Request) {
     views.EstadisticasView().Render(context.Background(), w)
 }
@@ -70,11 +146,11 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Error al cargar procesos: "+err.Error(), http.StatusInternalServerError)
         return
     }
-
+/*
     if procesos == nil {
         procesos = []db.Proceso{}
     }
-
+*/
     views.StaticLayout(views.HomeView(procesos)).Render(context.Background(), w)
 }
 
@@ -144,12 +220,19 @@ func listProcesos(w http.ResponseWriter, r *http.Request) {
 
 
 func createProceso(w http.ResponseWriter, r *http.Request) {
-	
-    if err := r.ParseForm(); err != nil {
+    var err error
+    
+    if err = r.ParseForm(); err != nil {
         http.Error(w, "Error al procesar el formulario", http.StatusBadRequest)
         return
     }
-
+    
+    ultima, err := queries.GetLastSimulacion(context.Background())
+    if err != nil {
+        http.Error(w, "No hay simulación activa", http.StatusBadRequest)
+        return
+    }
+    
     toInt32 := func(key string) (int32, error) {
         valStr := r.FormValue(key)
         valInt, err := strconv.ParseInt(valStr, 10, 32) 
@@ -160,7 +243,6 @@ func createProceso(w http.ResponseWriter, r *http.Request) {
     }
 
     var p db.CreateProcessParams
-    var err error
 
     p.Nombre = r.FormValue("nombre")
     p.Estado = r.FormValue("estado") // Viene del input hidden
@@ -174,13 +256,15 @@ func createProceso(w http.ResponseWriter, r *http.Request) {
     p.ArrivalTime, err = toInt32("arrival_time")
     if err != nil { http.Error(w, "El campo 'Arrival time' es inválido.", http.StatusBadRequest); return }
     
-    _, err = queries.CreateProcess(context.Background(), p)
+    p.IDSimulacion = ultima.ID
     
+    _, err = queries.CreateProcess(context.Background(), p)
     if err != nil {
-        log.Printf("Error al crear proceso en DB: %v", err)
-        http.Error(w, "Error interno al guardar el proceso. Ver logs del servidor.", http.StatusInternalServerError)
+        log.Println("Error DB:", err)
+        http.Error(w, "Error al guardar simulación", http.StatusInternalServerError)
         return
     }
+
     listProcesos(w, r)
     return
     //http.Redirect(w, r, "/", http.StatusSeeOther) Elimina la redireccion 
@@ -203,6 +287,11 @@ func deleteProceso (w http.ResponseWriter, r *http.Request, id int32) {
 
 // Ejecutar simulacion
 func ejecutarSimulacion(w http.ResponseWriter, r *http.Request) {
+
+    //Las simulaciones son de términos cortos/tiempos cortos o short terms. 
+
+
+
     //obtengo los procesos en estado "new" que son los creados por el usuario
     newQueue, err := queries.ListProcessByEstado(context.Background(), "new")
     if err != nil {
@@ -217,9 +306,14 @@ func ejecutarSimulacion(w http.ResponseWriter, r *http.Request) {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
+    if len(simulacion) == 0 {
+        http.Error(w, "No hay simulaciones cargadas", http.StatusBadRequest)
+        return
+    }
+    ultima := simulacion[len(simulacion)-1]
 
     //Aquí iria la llamada a la funcion que ejecuta la simulacion con los procesos new 
-    switch simulacion[len(simulacion)-1].Algoritmo {
+    switch ultima.Algoritmo {
     case "FCFS":
         log.Println("Ejecutando FCFS")
         fcfs(newQueue)
@@ -259,6 +353,7 @@ func fcfs(newQueue []db.Proceso) {
                 //updateProcesoEstado(newQueue[i].ID, "ready") //actualizo en la DB el estado del proceso
                 newQueue[i].Estado = "ready"
                 readyQueue = append(readyQueue, newQueue[i])
+                newQueue = append(newQueue[:i], newQueue[i+1:]...)
             }
         } 
         //Tomo el primer elemento de la lista de ready y lo paso a running si está disponible para ejecutar
@@ -289,10 +384,27 @@ func fcfs(newQueue []db.Proceso) {
     //Imprimir que la simulacion finalizó.
     fmt.Println("La simulación ha finalizado.")
 }
+func OpcionesAlgoritmoHandler(w http.ResponseWriter, r *http.Request) {
+    algoritmo := r.URL.Query().Get("algoritmo")
+
+    if algoritmo == "round_robin" {
+        views.InputQuantum().Render(r.Context(), w)
+        return
+    } else if algoritmo == "priority" {
+        views.InputPrioridad().Render(r.Context(), w)
+        return
+    } else {
+        // No se necesita ningún campo adicional para otros algoritmos
+        w.WriteHeader(http.StatusNoContent) // 204 No Content
+        return
+    }
+}
+
 func calcularEstadisticasSimulacion(terminatedQueue []db.Proceso) {
     //Funcion que calcula las estadisticas de la simulacion y las guarda en la DB
     //TO-DO calcular avg waiting time, avg turnaround time, avg response time, cpu utilization, throughput
     //y guardar en la tabla estadisticas_simulacion
+    
 }
 
 func runningStateFunc() {
