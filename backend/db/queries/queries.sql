@@ -9,28 +9,28 @@
 
 
 -- name: CreateProcess :one
-INSERT INTO procesos (nombre, prioridad, burst_time, arrival_time, estado, id_simulacion)
+INSERT INTO proceso (nombre, prioridad, burst_time, arrival_time, estado, id_simulacion)
 VALUES ($1, $2, $3, $4, $5, $6)
 RETURNING *;
 
 -- name: GetProcess :one
 SELECT *
-FROM procesos
+FROM proceso
 WHERE id = $1;
 
 -- name: ListProcess :many
 SELECT *
-FROM procesos
+FROM proceso
 ORDER BY id;
 
 -- name: ListProcessByEstado :many
 SELECT *
-FROM procesos
+FROM proceso
 WHERE estado = $1
 ORDER BY id;
 
 -- name: UpdateProcess :exec
-UPDATE procesos
+UPDATE proceso
 SET nombre=$2,
     prioridad=$3,
     burst_time=$4,
@@ -40,26 +40,33 @@ SET nombre=$2,
 WHERE id = $1;
 
 -- name: DeleteProcess :exec
-DELETE FROM procesos
+DELETE FROM proceso
 WHERE id= $1;
+
+-- name: GetProcessesBySimulacion :many
+SELECT *
+FROM proceso
+WHERE id_simulacion = $1
+ORDER BY id;
 
 
 -- name: CreateSimulacion :one
-INSERT INTO simulaciones (nombre, process_time, context_switches, dispatch_latency, average_turnaround_time, average_waiting_time, average_throughput, algoritmo, quantum, prioridad)
+INSERT INTO simulacion (nombre, process_time, context_switches, dispatch_latency, average_turnaround_time, average_waiting_time, average_throughput, algoritmo, quantum, prioridad)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 RETURNING *;
+
 -- name: GetSimulacion :one
 SELECT *
-FROM simulaciones
+FROM simulacion
 WHERE id = $1;
 
 -- name: ListSimulacion :many
 SELECT *
-FROM simulaciones
+FROM simulacion
 ORDER BY id;
 
 -- name: UpdateSimulacion :exec
-UPDATE simulaciones
+UPDATE simulacion
 SET nombre=$2,
     process_time=$3,
     context_switches=$4,
@@ -74,6 +81,6 @@ WHERE id = $1;
 
 -- name: GetLastSimulacion :one
 SELECT *
-FROM simulaciones
+FROM simulacion
 ORDER BY id DESC
 LIMIT 1;

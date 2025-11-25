@@ -1,0 +1,37 @@
+package views
+
+import (
+    "strconv"
+    db "scheduler_os/backend/db/sqlc"
+)
+templ ListarSimulaciones(simulaciones []db.Simulacion) {
+    <section id="listado-simulaciones" >
+            <h2> Listado de Simulaciones </h2>
+            if len(simulaciones) == 0{
+                <h3> No hay simulaciones </h3>
+            } else {
+
+                for _, simulacion := range simulaciones {
+                    <article class="card" >
+                        <h2>Simulación ID: { simulacion.ID }</h2>
+
+                        <ul class="card-footer">
+                            <li>Algoritmo: { simulacion.Algoritmo }</li>
+                            <li>Tiempo Promedio de Turnaround: { simulacion.AverageTurnaroundTime }</li>
+                            <li>Cambios de Contexto: { simulacion.ContextSwitches }</li>
+                               
+                        </ul>
+                        <button
+                            type="button"
+                            hx-get={"/simulaciones/" + strconv.Itoa(int(simulacion.ID))}
+                            hx-target="listado-simulaciones"
+                            hx-swap="innerHTML"
+                        >
+                            Ver Estadísticas
+                        </button> <!--El  hx-swap debe ser delete segun dice la documenacion, usando outerHTML se duplicaba el layout-->
+                    </article>
+                }
+            }
+    </section>
+                      
+}

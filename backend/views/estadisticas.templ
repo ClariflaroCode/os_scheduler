@@ -1,20 +1,33 @@
 package views
+import (
+    db "scheduler_os/backend/db/sqlc"
+)
 
-templ EstadisticasView() {
+templ EstadisticasView(simulacion db.Simulacion, procesos []db.Proceso) {
     <section id="estadisticas">
         <h2>Estadísticas de la Simulación</h2>
         <section class="estadistica-item">
             <h3>Tiempo de procesamiento</h3>
             <p>Aquí se mostrará el tiempo promedio de procesamiento.</p>
+            <p>  { simulacion.AverageTurnaroundTime } </p>
         </section>
         <section class="estadistica-item">
             <h3>Context switches</h3>
             <p>Aquí se mostrará el número de cambios de contexto durante la simulación.</p>
+            <p>  { simulacion.ContextSwitches } </p>
         </section>
         <section class="estadistica-item">
             <h3>Algoritmo</h3>
             <p>Aquí se mostrará el algoritmo utilizado durante la simulación.</p>
+            <p>  { simulacion.Algoritmo } </p>
         </section>
+
+        <details > 
+            <summary>Haz clic aquí para ver el listado de procesos </summary>
+            <div id="listado-procesos">
+                @ListarProcesos(procesos, "")
+            </div>
+        </details>
     </section>
 }
 

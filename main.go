@@ -32,16 +32,15 @@ func main() {
 
     mux.HandleFunc("/procesos", handleProcesos)
     mux.HandleFunc("/procesos/", handleProcesos)
-
+    mux.HandleFunc("/simulaciones", handleSimulaciones)
+    mux.HandleFunc("/simulaciones/", handleSimulaciones)
 
 
 	mux.HandleFunc("/", handleHome)
     
     mux.HandleFunc("/agregar", showCreateForm)
-    mux.HandleFunc("/estadisticas", showEstadisticas)
     mux.HandleFunc("/algoritmo", showAlgoritmoForm)
     mux.HandleFunc("/ejecutar", ejecutarSimulacion)
-    mux.HandleFunc("/simulacion", crearSimulacion)
     mux.HandleFunc("/algoritmo/opciones", OpcionesAlgoritmoHandler) //Para que muestre el input quantum si se selecciona RR
     mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./backend/static"))))
     err = http.ListenAndServe(":8080", mux)
@@ -133,11 +132,18 @@ func crearSimulacion(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func showEstadisticas(w http.ResponseWriter, r *http.Request) {
-    views.EstadisticasView().Render(context.Background(), w)
-}
+
 func showCreateForm(w http.ResponseWriter, r *http.Request) {
     views.AgregarForm().Render(context.Background(), w)
+}
+func MostrarSimulaciones(w http.ResponseWriter, r *http.Request) {
+    simulaciones, err := queries.ListSimulacion(context.Background())
+    if err != nil {
+        http.Error(w, "Error al cargar simulaciones: "+err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    views.ListarSimulaciones(simulaciones).Render(context.Background(), w)
 }
 func handleHome(w http.ResponseWriter, r *http.Request) {
     
@@ -193,6 +199,50 @@ func handleProcesos(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
     }
 }
+
+func handleSimulaciones(w http.ResponseWriter, r *http.Request) {
+
+    path := strings.TrimPrefix(r.URL.Path, "/simulaciones")
+    pathParts := strings.Split(path, "/")
+
+    switch r.Method {            
+    case "GET":
+        if (len(pathParts) == 1 && pathParts[0] != "") {
+            id := pathParts[0]
+            if id != "" {
+                id, err := strconv.Atoi(id)
+                if err != nil {
+                    http.Error(w, "ID inválido", http.StatusBadRequest)
+                    return
+                }
+                
+                var procesos []db.Proceso
+                simulacion, err := queries.GetSimulacion(context.Background(), int32(id))
+                if err != nil {
+                    http.Error(w, "Error al cargar la simulacion", http.StatusInternalServerError)
+                    return
+                }
+                procesos, err = queries.GetProcessesBySimulacion(context.Background(), int32(id))
+                if err != nil {
+                    http.Error(w, "Error al cargar los procesos de la simulacion", http.StatusInternalServerError)
+                    return
+                }
+                views.EstadisticasView(simulacion, procesos).Render(context.Background(), w)
+                return
+            }
+        }
+        MostrarSimulaciones(w, r)
+        return
+
+    case "POST":
+        crearSimulacion(w, r)
+        return
+    default:
+        // Si no es OPTIONS y no es ninguno de los métodos permitidos, devuelve 405.
+        http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
+    }
+}
+
 func getProcesoByEstado(w http.ResponseWriter, r *http.Request, estado string) {
     procesos, err := queries.ListProcessByEstado(context.Background(), estado)
     if err != nil {
@@ -270,7 +320,7 @@ func createProceso(w http.ResponseWriter, r *http.Request) {
     //http.Redirect(w, r, "/", http.StatusSeeOther) Elimina la redireccion 
     
 }
-func deleteProceso (w http.ResponseWriter, r *http.Request, id int32) {
+func deleteProceso(w http.ResponseWriter, r *http.Request, id int32) {
     err := queries.DeleteProcess(context.Background(), id)
     //Si no hubo error SQL → error = nil
     //Si la query falló → error != nil
@@ -329,7 +379,7 @@ func ejecutarSimulacion(w http.ResponseWriter, r *http.Request) {
     }
 
 
- 
+    //TO-DO: actualizar la tabla simulacion con las estadisticas de la simulacion que se acaba de ejecutar
 
     fmt.Fprintln(w, "Simulación ejecutada")
 }
@@ -380,7 +430,7 @@ func fcfs(newQueue []db.Proceso) {
         clock++
 
     }
-    calcularEstadisticasSimulacion(terminatedQueue) //Esto calcula las estadisticas de la simulacion y las guarda en la DB. 
+    calcularEstadisticasSimulacion(terminatedQueue, "fcfs") //Esto calcula las estadisticas de la simulacion y las guarda en la DB. 
     //Imprimir que la simulacion finalizó.
     fmt.Println("La simulación ha finalizado.")
 }
@@ -400,31 +450,35 @@ func OpcionesAlgoritmoHandler(w http.ResponseWriter, r *http.Request) {
     }
 }
 
-func calcularEstadisticasSimulacion(terminatedQueue []db.Proceso) {
+func calcularEstadisticasSimulacion(terminatedQueue []db.Proceso, algoritmo string) {
     //Funcion que calcula las estadisticas de la simulacion y las guarda en la DB
     //TO-DO calcular avg waiting time, avg turnaround time, avg response time, cpu utilization, throughput
     //y guardar en la tabla estadisticas_simulacion
+    process_time := 0
+    //turnaround_time := 0
+    //waiting_time := 0
+    averageThroughput:= len(terminatedQueue) / process_time
+    algoritmo_used := algoritmo
     
-}
+    for _, p := range terminatedQueue {
+        process_time += int(p.BurstTime)
+        fmt.Printf("Proceso ID: %d, Nombre: %s, Estado: %s, Tiempo de espera: %d, Tiempo de respuesta: %d, Tiempo de retorno: %d\n", p.ID, p.Nombre, p.Estado, p.BurstTime, p.ArrivalTime, p.Prioridad)
+    }
 
-func runningStateFunc() {
-    //Funcion que maneja los procesos en estado running
-    //Acá recibo la cola running y la voy procesando, simulando los ciclos de reloj, y cuando un proceso termina su burst time se cambia su estado a terminated
-    //Aca si es RR y el proceso agota su quantum se cambia su estado a Ready
-}
-func waitingStateFunc() {
-    //Funcion que cambia el estado de los procesos de waiting a ready
-    //Acá recibo la cola waiting y la voy procesando, simulando los ciclos de reloj, y cuando un proceso agota su tiempo de espera se cambia su estado a ready
-}
-
-/*
-func updateProcesoEstado(id int32, newEstado string) error {
-    //TO-DO agregar query para actualizar el estado del proceso
-    err := queries.UpdateProcesoEstado(context.Background(), db.UpdateProcesoEstadoParams{
-        ID:     id,
-        Estado: newEstado,
+    ultima, err := queries.GetLastSimulacion(context.Background())
+    if err != nil {
+        log.Println("Error al obtener la última simulación:", err)
+        return
+    }
+    err = queries.UpdateSimulacion(context.Background(), db.UpdateSimulacionParams{
+        ID:              ultima.ID,
+        Algoritmo:       algoritmo_used,
+        AverageThroughput: int32(averageThroughput),
     })
-    return err
-} 
-    NO, no tiene sentido que por cada cambio de estado haga una llamada a la DB. 
-*/
+    if err != nil {
+        log.Println("Error al actualizar la simulación:", err)
+        return
+    }
+    log.Printf("Simulación %d actualizada con estadísticas.", ultima.ID)
+    return
+}

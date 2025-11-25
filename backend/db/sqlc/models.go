@@ -18,7 +18,7 @@ type Proceso struct {
 	IDSimulacion int32  `json:"id_simulacion"`
 }
 
-type Simulacione struct {
+type Simulacion struct {
 	ID                    int32         `json:"id"`
 	Nombre                string        `json:"nombre"`
 	ProcessTime           int32         `json:"process_time"`
