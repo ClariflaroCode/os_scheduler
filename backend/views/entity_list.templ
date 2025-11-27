@@ -23,9 +23,13 @@ templ ListarProcesos(procesos []db.Proceso, estado string) {
                         <ul class="card-footer">
                             <li>Prioridad: { proceso.Prioridad }</li>
                             <li>Burst Time:{ proceso.BurstTime }</li>
-                            <li>Arrival Time{ proceso.ArrivalTime }</li>
+                            <li>Arrival Time: { proceso.ArrivalTime }</li>
                             <li>Estado: { proceso.Estado }</li>
-                               
+                            <li>Id simulacion: { proceso.IDSimulacion }</li>
+                            if proceso.Estado == "terminated" {
+                                <li>Tiempo de espera: { proceso.WaitingTime.Int32 }</li>
+                                <li>Tiempo de finalizacion: { proceso.CompletionTime.Int32 }</li>
+                            }
                         </ul>
                         <button
                             type="button"
