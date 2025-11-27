@@ -21,7 +21,11 @@ myapp
 |     |     ├─ home.templ\ 
 |     |     ├─ entity_list.templ\ 
 |     |     ├─ entity_form.templ\ 
-|     |     └─ estadisticas.templ\ 
+|     |     ├─input_quantum.templ\ 
+|     |     ├─input_prioridad.templ\ 
+|     |     ├─simulaciones_list.templ\ 
+|     |     ├─algoritmo.templ\ 
+|     |     
 |     └──css\
 │          └──pico.css\
 │    
@@ -35,6 +39,12 @@ myapp
 **PARA EJECUTAR EL PROYECTO**  
 *Para correr el backend*
 - Correr el comando make all
+**Notas**
+- Se debe elegir el algoritmo de planificacion, por ahora solo está implementado el fcfs.
+- Crear los procesos deseados
+- Darle al boton de ejecutar
+- Ver en la seccion de estadisticas la simulacion deseada
+
 
 
 Alumna: Julieta Watts   
