@@ -39,6 +39,7 @@ myapp
 **PARA EJECUTAR EL PROYECTO**  
 *Para correr el backend*
 - Correr el comando make all
+  
 **Notas**
 - Se debe elegir el algoritmo de planificacion, por ahora solo está implementado el fcfs.
 - Crear los procesos deseados
