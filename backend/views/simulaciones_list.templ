@@ -3,7 +3,7 @@ package views
 import (
     db "scheduler_os/backend/db/sqlc"
 )
-templ ListarSimulaciones(simulaciones []db.Simulacion) {
+templ ListarSimulaciones(simulaciones []db.Simulacion, procesos []db.Proceso) {
     <section id="listado-simulaciones" >
             <h2> Listado de Simulaciones </h2>
             if len(simulaciones) == 0{
@@ -31,6 +31,12 @@ templ ListarSimulaciones(simulaciones []db.Simulacion) {
                             <li>Cambios: { simulacion.ContextSwitches }</li>
                                
                         </ul>
+                        <details> 
+
+                            <summary>Ver Listado de procesos</summary>
+                            @ListarProcesos(procesos, "")
+                        </details>
+                        
                         <!--<button
                             type="button"
                             hx-get={"/simulaciones/" + strconv.Itoa(int(simulacion.ID))}

@@ -12,7 +12,7 @@ import (
 	db "scheduler_os/backend/db/sqlc"
 )
 
-func ListarSimulaciones(simulaciones []db.Simulacion) templ.Component {
+func ListarSimulaciones(simulaciones []db.Simulacion, procesos []db.Proceso) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -203,13 +203,21 @@ func ListarSimulaciones(simulaciones []db.Simulacion) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</li></ul><!--<button\n                            type=\"button\"\n                            hx-get={\"/simulaciones/\" + strconv.Itoa(int(simulacion.ID))}\n                            hx-target=\"#listado-simulaciones\"\n                            hx-swap=\"outerHTML\"\n                        >\n                            Ver Estadísticas\n                        </button> El  hx-swap debe ser delete segun dice la documenacion, usando outerHTML se duplicaba el layout--></article>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</li></ul><details><summary>Ver Listado de procesos</summary>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = ListarProcesos(procesos, "").Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</details><!--<button\n                            type=\"button\"\n                            hx-get={\"/simulaciones/\" + strconv.Itoa(int(simulacion.ID))}\n                            hx-target=\"#listado-simulaciones\"\n                            hx-swap=\"outerHTML\"\n                        >\n                            Ver Estadísticas\n                        </button> El  hx-swap debe ser delete segun dice la documenacion, usando outerHTML se duplicaba el layout--></article>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

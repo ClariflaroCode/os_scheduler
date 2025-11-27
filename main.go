@@ -152,8 +152,14 @@ func MostrarSimulaciones(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Error al cargar simulaciones: "+err.Error(), http.StatusInternalServerError)
         return
     }
+    var procesos []db.Proceso
+    procesos, err = queries.ListProcess(context.Background())
+    if err != nil {
+        http.Error(w, "Error al cargar procesos: "+err.Error(), http.StatusInternalServerError)
+        return
+    }
 
-    views.ListarSimulaciones(simulaciones).Render(context.Background(), w)
+    views.ListarSimulaciones(simulaciones, procesos).Render(context.Background(), w)
 }
 func handleHome(w http.ResponseWriter, r *http.Request) {
     /*
