@@ -24,7 +24,7 @@ myapp
 |     |     ├─input_quantum.templ\ 
 |     |     ├─input_prioridad.templ\ 
 |     |     ├─simulaciones_list.templ\ 
-|     |     ├─algoritmo.templ\ 
+|     |     └─algoritmo.templ\ 
 |     |     
 |     └──css\
 │          └──pico.css\
