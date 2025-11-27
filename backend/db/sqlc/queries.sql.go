@@ -17,7 +17,7 @@ const createProcess = `-- name: CreateProcess :one
 
 INSERT INTO proceso (nombre, prioridad, burst_time, arrival_time, estado, id_simulacion)
 VALUES ($1, $2, $3, $4, $5, $6)
-RETURNING id, nombre, prioridad, burst_time, arrival_time, estado, id_simulacion
+RETURNING id, nombre, prioridad, burst_time, arrival_time, waiting_time, completion_time, estado, id_simulacion
 `
 
 type CreateProcessParams struct {
@@ -51,6 +51,8 @@ func (q *Queries) CreateProcess(ctx context.Context, arg CreateProcessParams) (P
 		&i.Prioridad,
 		&i.BurstTime,
 		&i.ArrivalTime,
+		&i.WaitingTime,
+		&i.CompletionTime,
 		&i.Estado,
 		&i.IDSimulacion,
 	)
@@ -68,9 +70,9 @@ type CreateSimulacionParams struct {
 	ProcessTime           int32         `json:"process_time"`
 	ContextSwitches       int32         `json:"context_switches"`
 	DispatchLatency       int32         `json:"dispatch_latency"`
-	AverageTurnaroundTime int32         `json:"average_turnaround_time"`
-	AverageWaitingTime    int32         `json:"average_waiting_time"`
-	AverageThroughput     int32         `json:"average_throughput"`
+	AverageTurnaroundTime float64       `json:"average_turnaround_time"`
+	AverageWaitingTime    float64       `json:"average_waiting_time"`
+	AverageThroughput     float64       `json:"average_throughput"`
 	Algoritmo             string        `json:"algoritmo"`
 	Quantum               sql.NullInt32 `json:"quantum"`
 	Prioridad             sql.NullInt32 `json:"prioridad"`
@@ -143,7 +145,7 @@ func (q *Queries) GetLastSimulacion(ctx context.Context) (Simulacion, error) {
 }
 
 const getProcess = `-- name: GetProcess :one
-SELECT id, nombre, prioridad, burst_time, arrival_time, estado, id_simulacion
+SELECT id, nombre, prioridad, burst_time, arrival_time, waiting_time, completion_time, estado, id_simulacion
 FROM proceso
 WHERE id = $1
 `
@@ -157,6 +159,8 @@ func (q *Queries) GetProcess(ctx context.Context, id int32) (Proceso, error) {
 		&i.Prioridad,
 		&i.BurstTime,
 		&i.ArrivalTime,
+		&i.WaitingTime,
+		&i.CompletionTime,
 		&i.Estado,
 		&i.IDSimulacion,
 	)
@@ -164,7 +168,7 @@ func (q *Queries) GetProcess(ctx context.Context, id int32) (Proceso, error) {
 }
 
 const getProcessesBySimulacion = `-- name: GetProcessesBySimulacion :many
-SELECT id, nombre, prioridad, burst_time, arrival_time, estado, id_simulacion
+SELECT id, nombre, prioridad, burst_time, arrival_time, waiting_time, completion_time, estado, id_simulacion
 FROM proceso
 WHERE id_simulacion = $1
 ORDER BY id
@@ -185,6 +189,8 @@ func (q *Queries) GetProcessesBySimulacion(ctx context.Context, idSimulacion int
 			&i.Prioridad,
 			&i.BurstTime,
 			&i.ArrivalTime,
+			&i.WaitingTime,
+			&i.CompletionTime,
 			&i.Estado,
 			&i.IDSimulacion,
 		); err != nil {
@@ -227,7 +233,7 @@ func (q *Queries) GetSimulacion(ctx context.Context, id int32) (Simulacion, erro
 }
 
 const listProcess = `-- name: ListProcess :many
-SELECT id, nombre, prioridad, burst_time, arrival_time, estado, id_simulacion
+SELECT id, nombre, prioridad, burst_time, arrival_time, waiting_time, completion_time, estado, id_simulacion
 FROM proceso
 ORDER BY id
 `
@@ -247,6 +253,8 @@ func (q *Queries) ListProcess(ctx context.Context) ([]Proceso, error) {
 			&i.Prioridad,
 			&i.BurstTime,
 			&i.ArrivalTime,
+			&i.WaitingTime,
+			&i.CompletionTime,
 			&i.Estado,
 			&i.IDSimulacion,
 		); err != nil {
@@ -264,7 +272,7 @@ func (q *Queries) ListProcess(ctx context.Context) ([]Proceso, error) {
 }
 
 const listProcessByEstado = `-- name: ListProcessByEstado :many
-SELECT id, nombre, prioridad, burst_time, arrival_time, estado, id_simulacion
+SELECT id, nombre, prioridad, burst_time, arrival_time, waiting_time, completion_time, estado, id_simulacion
 FROM proceso
 WHERE estado = $1
 ORDER BY id
@@ -285,6 +293,8 @@ func (q *Queries) ListProcessByEstado(ctx context.Context, estado string) ([]Pro
 			&i.Prioridad,
 			&i.BurstTime,
 			&i.ArrivalTime,
+			&i.WaitingTime,
+			&i.CompletionTime,
 			&i.Estado,
 			&i.IDSimulacion,
 		); err != nil {
@@ -397,9 +407,9 @@ type UpdateSimulacionParams struct {
 	ProcessTime           int32         `json:"process_time"`
 	ContextSwitches       int32         `json:"context_switches"`
 	DispatchLatency       int32         `json:"dispatch_latency"`
-	AverageTurnaroundTime int32         `json:"average_turnaround_time"`
-	AverageWaitingTime    int32         `json:"average_waiting_time"`
-	AverageThroughput     int32         `json:"average_throughput"`
+	AverageTurnaroundTime float64       `json:"average_turnaround_time"`
+	AverageWaitingTime    float64       `json:"average_waiting_time"`
+	AverageThroughput     float64       `json:"average_throughput"`
 	Algoritmo             string        `json:"algoritmo"`
 	Quantum               sql.NullInt32 `json:"quantum"`
 	Prioridad             sql.NullInt32 `json:"prioridad"`

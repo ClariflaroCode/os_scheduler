@@ -9,13 +9,15 @@ import (
 )
 
 type Proceso struct {
-	ID           int32  `json:"id"`
-	Nombre       string `json:"nombre"`
-	Prioridad    int32  `json:"prioridad"`
-	BurstTime    int32  `json:"burst_time"`
-	ArrivalTime  int32  `json:"arrival_time"`
-	Estado       string `json:"estado"`
-	IDSimulacion int32  `json:"id_simulacion"`
+	ID             int32         `json:"id"`
+	Nombre         string        `json:"nombre"`
+	Prioridad      int32         `json:"prioridad"`
+	BurstTime      int32         `json:"burst_time"`
+	ArrivalTime    int32         `json:"arrival_time"`
+	WaitingTime    sql.NullInt32 `json:"waiting_time"`
+	CompletionTime sql.NullInt32 `json:"completion_time"`
+	Estado         string        `json:"estado"`
+	IDSimulacion   int32         `json:"id_simulacion"`
 }
 
 type Simulacion struct {
@@ -24,9 +26,9 @@ type Simulacion struct {
 	ProcessTime           int32         `json:"process_time"`
 	ContextSwitches       int32         `json:"context_switches"`
 	DispatchLatency       int32         `json:"dispatch_latency"`
-	AverageTurnaroundTime int32         `json:"average_turnaround_time"`
-	AverageWaitingTime    int32         `json:"average_waiting_time"`
-	AverageThroughput     int32         `json:"average_throughput"`
+	AverageTurnaroundTime float64       `json:"average_turnaround_time"`
+	AverageWaitingTime    float64       `json:"average_waiting_time"`
+	AverageThroughput     float64       `json:"average_throughput"`
 	Algoritmo             string        `json:"algoritmo"`
 	Quantum               sql.NullInt32 `json:"quantum"`
 	Prioridad             sql.NullInt32 `json:"prioridad"`

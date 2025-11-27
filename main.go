@@ -362,11 +362,15 @@ func ejecutarSimulacion(w http.ResponseWriter, r *http.Request) {
     }
     ultima := simulacion[len(simulacion)-1]
 
+    var terminatedQueue []db.Proceso
+    var totalTime int
+
     //Aquí iria la llamada a la funcion que ejecuta la simulacion con los procesos new 
     switch ultima.Algoritmo {
     case "FCFS":
         log.Println("Ejecutando FCFS")
-        fcfs(newQueue)
+        totalTime, terminatedQueue = fcfs(newQueue)
+        calcularEstadisticasSimulacion(terminatedQueue, "FCFS", totalTime)
     case "SJF":
         log.Println("Ejecutando SJF")
         //sjf(newQueue)
@@ -383,13 +387,13 @@ func ejecutarSimulacion(w http.ResponseWriter, r *http.Request) {
 
     fmt.Fprintln(w, "Simulación ejecutada")
 }
-func fcfs(newQueue []db.Proceso) {
+func fcfs(newQueue []db.Proceso) (int, []db.Proceso){ //NOTA: los primeros parentesis son los parametros de entrada, los segundos los de salida
     //Funcion que ejecuta el algoritmo FCFS
     //Acá recibo la cola new y la voy procesando, miro los arrival time, se simulan los ciclos de reloj, y cuando un proceso llega a su arrival time se cambia su estado a ready
     clock := 0 //Empiezo el ciclo de reloj en 0
 
     //Mientras que haya procesos en new o ready o running o waiting debo seguir simulando. La simulacion termina cuando todos los procesos estan en terminated. 
-    readyQueue := []db.Proceso{}
+    readyQueue := []*db.Proceso{} //Debe ser puntero porque con esto voy a modificar los procesos en la db. 
     runningProceso := (*db.Proceso)(nil) //Puntero a proceso en estado running, inicialmente nil
     waitingQueue := []db.Proceso{}
     terminatedQueue := []db.Proceso{}
@@ -398,41 +402,54 @@ func fcfs(newQueue []db.Proceso) {
 
     //Mientras que haya procesos en new o ready o running o waiting debo seguir simulando. La simulacion termina cuando todos los procesos estan en terminated.
     for len(newQueue) > 0 || len(readyQueue) > 0 || runningProceso != nil || len(waitingQueue) > 0 {
-        for i := 0; i < len(newQueue); i++ {
-            if newQueue[i].ArrivalTime == int32(clock) { 
-                //updateProcesoEstado(newQueue[i].ID, "ready") //actualizo en la DB el estado del proceso
-                newQueue[i].Estado = "ready"
-                readyQueue = append(readyQueue, newQueue[i])
+        for i := 0; i < len(newQueue); {
+            if newQueue[i].ArrivalTime == int32(clock) {
+                p := newQueue[i]
+                readyQueue = append(readyQueue, &p)
                 newQueue = append(newQueue[:i], newQueue[i+1:]...)
+                continue   // esto es para que no incremente el i, ya que al eliminar un elemento, el siguiente elemento se mueve a la posición actual. 
             }
-        } 
+            i++
+        }
+
+
         //Tomo el primer elemento de la lista de ready y lo paso a running si está disponible para ejecutar
         if len(readyQueue) > 0 && runningProceso == nil {
-            runningProceso = &readyQueue[0]
+            runningProceso = readyQueue[0]
             runningProceso.Estado = "running"
             //updateProcesoEstado(readyQueue[0].ID, "running") //actualizo en la DB el estado del proceso
             readyQueue = readyQueue[1:] //elimino el primer elemento de la lista de ready, la ready queue se volvio la ready queue 
             // empezando desde el segundo elemento hasta el final por eso 1:. En go la longitud se indica con min:max
-
-
-
+        }
+        // Incremento de waiting time
+        for i := range readyQueue {
+            readyQueue[i].WaitingTime = sql.NullInt32{
+                Int32: readyQueue[i].WaitingTime.Int32 + 1,
+                Valid: true,
+            }
         }
         if runningProceso != nil {
+            runningProceso.BurstTime--
+
             if runningProceso.BurstTime == 0 {
                 //updateProcesoEstado(runningProceso.ID, "terminated") //actualizo en la DB el estado del proceso
                 runningProceso.Estado = "terminated"
+
+                runningProceso.CompletionTime = sql.NullInt32{
+                    Int32: int32(clock),
+                    Valid: true,
+                }
+
+
                 terminatedQueue = append(terminatedQueue, *runningProceso)
                 runningProceso = nil //libero la CPU
-            } else {
-                runningProceso.BurstTime--
-            }
+            } 
         }
         clock++
 
     }
-    calcularEstadisticasSimulacion(terminatedQueue, "fcfs") //Esto calcula las estadisticas de la simulacion y las guarda en la DB. 
-    //Imprimir que la simulacion finalizó.
-    fmt.Println("La simulación ha finalizado.")
+    return clock, terminatedQueue
+
 }
 func OpcionesAlgoritmoHandler(w http.ResponseWriter, r *http.Request) {
     algoritmo := r.URL.Query().Get("algoritmo")
@@ -450,20 +467,22 @@ func OpcionesAlgoritmoHandler(w http.ResponseWriter, r *http.Request) {
     }
 }
 
-func calcularEstadisticasSimulacion(terminatedQueue []db.Proceso, algoritmo string) {
+func calcularEstadisticasSimulacion(terminatedQueue []db.Proceso, algoritmo string, totalTime int) {
     //Funcion que calcula las estadisticas de la simulacion y las guarda en la DB
     //TO-DO calcular avg waiting time, avg turnaround time, avg response time, cpu utilization, throughput
     //y guardar en la tabla estadisticas_simulacion
-    process_time := 0
-    //turnaround_time := 0
-    //waiting_time := 0
-    averageThroughput:= len(terminatedQueue) / process_time
-    algoritmo_used := algoritmo
+    turnaround_time := float64(0)
+    waiting_time := float64(0)
+
     
     for _, p := range terminatedQueue {
-        process_time += int(p.BurstTime)
-        fmt.Printf("Proceso ID: %d, Nombre: %s, Estado: %s, Tiempo de espera: %d, Tiempo de respuesta: %d, Tiempo de retorno: %d\n", p.ID, p.Nombre, p.Estado, p.BurstTime, p.ArrivalTime, p.Prioridad)
+        turnaround_time += float64(p.CompletionTime.Int32 - p.ArrivalTime)
+        waiting_time += float64(p.WaitingTime.Int32)
     }
+    averageTurnaroundTime := turnaround_time / float64(len(terminatedQueue))
+    averageWaitingTime := waiting_time / float64(len(terminatedQueue))
+    averageThroughput := float64(len(terminatedQueue)) / float64(totalTime)
+
 
     ultima, err := queries.GetLastSimulacion(context.Background())
     if err != nil {
@@ -472,8 +491,11 @@ func calcularEstadisticasSimulacion(terminatedQueue []db.Proceso, algoritmo stri
     }
     err = queries.UpdateSimulacion(context.Background(), db.UpdateSimulacionParams{
         ID:              ultima.ID,
-        Algoritmo:       algoritmo_used,
-        AverageThroughput: int32(averageThroughput),
+        Algoritmo:       algoritmo,
+        AverageWaitingTime:     averageWaitingTime,
+        AverageTurnaroundTime:  averageTurnaroundTime,
+        AverageThroughput: averageThroughput,
+        ProcessTime:    int32(totalTime),
     })
     if err != nil {
         log.Println("Error al actualizar la simulación:", err)

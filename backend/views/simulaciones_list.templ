@@ -1,7 +1,6 @@
 package views
 
 import (
-    "strconv"
     db "scheduler_os/backend/db/sqlc"
 )
 templ ListarSimulaciones(simulaciones []db.Simulacion) {
@@ -16,19 +15,30 @@ templ ListarSimulaciones(simulaciones []db.Simulacion) {
                         <h2>Simulación ID: { simulacion.ID }</h2>
 
                         <ul class="card-footer">
+                            <li>Nombre: { simulacion.Nombre }</li>
                             <li>Algoritmo: { simulacion.Algoritmo }</li>
+                            if simulacion.Quantum.Valid {
+                            <li>Quantum: { simulacion.Quantum.Int32 }</li>
+                            }
+                            if simulacion.Prioridad.Valid {
+                                <li>Prioridad: { simulacion.Prioridad.Int32 }</li>
+                            }
+                            <li>Tiempo de Proceso: { simulacion.ProcessTime }</li>
+                            <li>Tiempo de Despacho: { simulacion.DispatchLatency }</li>
                             <li>Tiempo Promedio de Turnaround: { simulacion.AverageTurnaroundTime }</li>
-                            <li>Cambios de Contexto: { simulacion.ContextSwitches }</li>
+                            <li>Tiempo Promedio de Waiting time: { simulacion.AverageWaitingTime }</li>
+                            <li>Rendimiento Promedio/Throughput: { simulacion.AverageThroughput }</li>
+                            <li>Cambios: { simulacion.ContextSwitches }</li>
                                
                         </ul>
-                        <button
+                        <!--<button
                             type="button"
                             hx-get={"/simulaciones/" + strconv.Itoa(int(simulacion.ID))}
-                            hx-target="listado-simulaciones"
-                            hx-swap="innerHTML"
+                            hx-target="#listado-simulaciones"
+                            hx-swap="outerHTML"
                         >
                             Ver Estadísticas
-                        </button> <!--El  hx-swap debe ser delete segun dice la documenacion, usando outerHTML se duplicaba el layout-->
+                        </button> El  hx-swap debe ser delete segun dice la documenacion, usando outerHTML se duplicaba el layout-->
                     </article>
                 }
             }
