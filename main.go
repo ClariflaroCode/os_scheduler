@@ -122,9 +122,19 @@ func crearSimulacion(w http.ResponseWriter, r *http.Request) {
     }
     //TO-DO: ver de hacer que el listar procesos directamente siempre llame al view y muestre los procesos 
     // y el grafo y el listar procesos por estado consulte directamente a las queues.
-    procesos, err := queries.ListProcess(context.Background())
+    /*procesos, err := queries.ListProcess(context.Background())
     if err != nil {
         http.Error(w, "Error al cargar procesos", http.StatusInternalServerError)
+        return
+    }*/
+    lastSimulacion, err := queries.GetLastSimulacion(context.Background())
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    procesos, err := queries.GetProcessesBySimulacion(context.Background(), lastSimulacion.ID)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
 
@@ -146,12 +156,22 @@ func MostrarSimulaciones(w http.ResponseWriter, r *http.Request) {
     views.ListarSimulaciones(simulaciones).Render(context.Background(), w)
 }
 func handleHome(w http.ResponseWriter, r *http.Request) {
-    
+    /*
     procesos, err := queries.ListProcess(context.Background())
     if err != nil {
         http.Error(w, "Error al cargar procesos: "+err.Error(), http.StatusInternalServerError)
         return
+    }*/
+    lastSimulacion, err := queries.GetLastSimulacion(context.Background())
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
     }
+    procesos, err := queries.GetProcessesBySimulacion(context.Background(), lastSimulacion.ID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 /*
     if procesos == nil {
         procesos = []db.Proceso{}
@@ -253,15 +273,18 @@ func getProcesoByEstado(w http.ResponseWriter, r *http.Request, estado string) {
 }
 
 func listProcesos(w http.ResponseWriter, r *http.Request) {
-	procesos, err := queries.ListProcess(context.Background())
+
+	//procesos, err := queries.ListProcess(context.Background())
+    lastSimulacion, err := queries.GetLastSimulacion(context.Background())
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    procesos, err := queries.GetProcessesBySimulacion(context.Background(), lastSimulacion.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-/*
-	if procesos == nil {
-		procesos = []db.Proceso{}
-	}*/
 
     views.HomeView(procesos).Render(context.Background(), w)
     return

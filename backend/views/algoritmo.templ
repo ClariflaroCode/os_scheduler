@@ -8,7 +8,7 @@ templ AgregarSimulacion()    {
                 
                 <label for="nombre">Nombre de la simulacion</label>
                 <input type="text" name="nombre" id="nombre" placeholder="Nombre de la simulacion">
-
+                <p>Nota: De momento esta solamente implementado el First come First Serve, FCFS</p>
                 <label for="algoritmo">Elegir el algoritmo de planificacion</label>
                 <select id="algoritmo" name="algoritmo" hx-get="/algoritmo/opciones" hx-target="#opciones-extra" hx-trigger="change"  hx-swap="innerHTML">
                     <option value="first_come_first_serve">First come First Serve</option>
