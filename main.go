@@ -420,13 +420,12 @@ func fcfs(newQueue []db.Proceso) (int, []db.Proceso){ //NOTA: los primeros paren
     //Funcion que ejecuta el algoritmo FCFS
     //Acá recibo la cola new y la voy procesando, miro los arrival time, se simulan los ciclos de reloj, y cuando un proceso llega a su arrival time se cambia su estado a ready
     clock := 0 //Empiezo el ciclo de reloj en 0
-
     //Mientras que haya procesos en new o ready o running o waiting debo seguir simulando. La simulacion termina cuando todos los procesos estan en terminated. 
     readyQueue := []*db.Proceso{} //Debe ser puntero porque con esto voy a modificar los procesos en la db. 
     runningProceso := (*db.Proceso)(nil) //Puntero a proceso en estado running, inicialmente nil
     waitingQueue := []db.Proceso{}
     terminatedQueue := []db.Proceso{}
-
+    
 
 
     //Mientras que haya procesos en new o ready o running o waiting debo seguir simulando. La simulacion termina cuando todos los procesos estan en terminated.
@@ -445,6 +444,7 @@ func fcfs(newQueue []db.Proceso) (int, []db.Proceso){ //NOTA: los primeros paren
         //Tomo el primer elemento de la lista de ready y lo paso a running si está disponible para ejecutar
         if len(readyQueue) > 0 && runningProceso == nil {
             runningProceso = readyQueue[0]
+            //contextSwitches++
             runningProceso.Estado = "running"
             //updateProcesoEstado(readyQueue[0].ID, "running") //actualizo en la DB el estado del proceso
             readyQueue = readyQueue[1:] //elimino el primer elemento de la lista de ready, la ready queue se volvio la ready queue 
@@ -510,11 +510,12 @@ func calcularEstadisticasSimulacion(terminatedQueue []db.Proceso, algoritmo stri
     //y guardar en la tabla estadisticas_simulacion
     turnaround_time := float64(0)
     waiting_time := float64(0)
-
+    contextSwitches := 0
     
     for _, p := range terminatedQueue {
         turnaround_time += float64(p.CompletionTime.Int32 - p.ArrivalTime)
         waiting_time += float64(p.WaitingTime.Int32)
+        contextSwitches++;
     }
     averageTurnaroundTime := turnaround_time / float64(len(terminatedQueue))
     averageWaitingTime := waiting_time / float64(len(terminatedQueue))
@@ -533,6 +534,7 @@ func calcularEstadisticasSimulacion(terminatedQueue []db.Proceso, algoritmo stri
         AverageTurnaroundTime:  averageTurnaroundTime,
         AverageThroughput: averageThroughput,
         ProcessTime:    int32(totalTime),
+        ContextSwitches: int32(contextSwitches),
     })
     if err != nil {
         log.Println("Error al actualizar la simulación:", err)
