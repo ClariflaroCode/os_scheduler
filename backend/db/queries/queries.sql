@@ -31,12 +31,10 @@ ORDER BY id;
 
 -- name: UpdateProcess :exec
 UPDATE proceso
-SET nombre=$2,
-    prioridad=$3,
-    burst_time=$4,
-    arrival_time=$5, 
-    estado=$6,
-    id_simulacion=$7
+SET 
+    waiting_time=$2,
+    completion_time=$3,
+    estado=$4
 WHERE id = $1;
 
 -- name: DeleteProcess :exec

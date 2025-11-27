@@ -354,34 +354,26 @@ func (q *Queries) ListSimulacion(ctx context.Context) ([]Simulacion, error) {
 
 const updateProcess = `-- name: UpdateProcess :exec
 UPDATE proceso
-SET nombre=$2,
-    prioridad=$3,
-    burst_time=$4,
-    arrival_time=$5, 
-    estado=$6,
-    id_simulacion=$7
+SET 
+    waiting_time=$2,
+    completion_time=$3,
+    estado=$4
 WHERE id = $1
 `
 
 type UpdateProcessParams struct {
-	ID           int32  `json:"id"`
-	Nombre       string `json:"nombre"`
-	Prioridad    int32  `json:"prioridad"`
-	BurstTime    int32  `json:"burst_time"`
-	ArrivalTime  int32  `json:"arrival_time"`
-	Estado       string `json:"estado"`
-	IDSimulacion int32  `json:"id_simulacion"`
+	ID             int32         `json:"id"`
+	WaitingTime    sql.NullInt32 `json:"waiting_time"`
+	CompletionTime sql.NullInt32 `json:"completion_time"`
+	Estado         string        `json:"estado"`
 }
 
 func (q *Queries) UpdateProcess(ctx context.Context, arg UpdateProcessParams) error {
 	_, err := q.db.ExecContext(ctx, updateProcess,
 		arg.ID,
-		arg.Nombre,
-		arg.Prioridad,
-		arg.BurstTime,
-		arg.ArrivalTime,
+		arg.WaitingTime,
+		arg.CompletionTime,
 		arg.Estado,
-		arg.IDSimulacion,
 	)
 	return err
 }

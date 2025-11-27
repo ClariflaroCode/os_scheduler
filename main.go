@@ -442,6 +442,14 @@ func fcfs(newQueue []db.Proceso) (int, []db.Proceso){ //NOTA: los primeros paren
 
 
                 terminatedQueue = append(terminatedQueue, *runningProceso)
+
+                queries.UpdateProcess(context.Background(), db.UpdateProcessParams{
+                    ID:             runningProceso.ID,
+                    WaitingTime:    runningProceso.WaitingTime,
+                    CompletionTime: runningProceso.CompletionTime,
+                    Estado:         "terminated",
+                })
+
                 runningProceso = nil //libero la CPU
             } 
         }
