@@ -11,6 +11,7 @@ import (
 	_ "github.com/lib/pq"
 	db "scheduler_os/backend/db/sqlc"
     views "scheduler_os/backend/views"
+    simulador "scheduler_os/simulador"
 )
 
 var queries *db.Queries
@@ -72,7 +73,12 @@ func crearSimulacion(w http.ResponseWriter, r *http.Request) {
     case "first_come_first_serve":
         s.Algoritmo = "FCFS"
         s.Quantum = sql.NullInt32{Valid: false}
-
+    case "shortest_job_first":
+        s.Algoritmo = "SJF"
+        s.Quantum = sql.NullInt32{Valid: false}
+    case "shortest_job_first_preemptive":
+        s.Algoritmo = "SJF_PREEMPTIVE"
+        s.Quantum = sql.NullInt32{Valid: false}
     case "round_robin":
         s.Algoritmo = "RR"
 
@@ -129,8 +135,10 @@ func crearSimulacion(w http.ResponseWriter, r *http.Request) {
     }*/
     lastSimulacion, err := queries.GetLastSimulacion(context.Background())
     if err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
+            http.Error(w, err.Error(), http.StatusInternalServerError)
+            return
+
+        
     }
     procesos, err := queries.GetProcessesBySimulacion(context.Background(), lastSimulacion.ID)
     if err != nil {
@@ -168,16 +176,15 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Error al cargar procesos: "+err.Error(), http.StatusInternalServerError)
         return
     }*/
+    var procesos = []db.Proceso{}
     lastSimulacion, err := queries.GetLastSimulacion(context.Background())
-    if err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
+    if err == nil {
+        procesos, err = queries.GetProcessesBySimulacion(context.Background(), lastSimulacion.ID)
+        if err != nil {
+            http.Error(w, err.Error(), http.StatusInternalServerError)
+            return
+        }
     }
-    procesos, err := queries.GetProcessesBySimulacion(context.Background(), lastSimulacion.ID)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 /*
     if procesos == nil {
         procesos = []db.Proceso{}
@@ -281,16 +288,15 @@ func getProcesoByEstado(w http.ResponseWriter, r *http.Request, estado string) {
 func listProcesos(w http.ResponseWriter, r *http.Request) {
 
 	//procesos, err := queries.ListProcess(context.Background())
+        var procesos = []db.Proceso{}
     lastSimulacion, err := queries.GetLastSimulacion(context.Background())
-    if err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
+    if err == nil {
+        procesos, err = queries.GetProcessesBySimulacion(context.Background(), lastSimulacion.ID)
+        if err != nil {
+            http.Error(w, err.Error(), http.StatusInternalServerError)
+            return
+        }
     }
-    procesos, err := queries.GetProcessesBySimulacion(context.Background(), lastSimulacion.ID)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 
     views.HomeView(procesos).Render(context.Background(), w)
     return
@@ -367,16 +373,8 @@ func deleteProceso(w http.ResponseWriter, r *http.Request, id int32) {
 // Ejecutar simulacion
 func ejecutarSimulacion(w http.ResponseWriter, r *http.Request) {
 
-    //Las simulaciones son de términos cortos/tiempos cortos o short terms. 
-
-
-
-    //obtengo los procesos en estado "new" que son los creados por el usuario
-    newQueue, err := queries.ListProcessByEstado(context.Background(), "new")
-    if err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
-    }
+  
+    
     //Busco los parametros de la ultima simulacion creada por el usuario 
 
     //TO-DO crear la tabla simulacion, crear una query que devuelva la ultima simulacion creada, otra que cree una simulacion nueva y otra query que devuelva todas las simulaciones. 
@@ -390,6 +388,12 @@ func ejecutarSimulacion(w http.ResponseWriter, r *http.Request) {
         return
     }
     ultima := simulacion[len(simulacion)-1]
+    
+    newQueue, err := queries.GetProcessesBySimulacion(context.Background(), ultima.ID)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
 
     var terminatedQueue []db.Proceso
     var totalTime int
@@ -398,11 +402,17 @@ func ejecutarSimulacion(w http.ResponseWriter, r *http.Request) {
     switch ultima.Algoritmo {
     case "FCFS":
         log.Println("Ejecutando FCFS")
-        totalTime, terminatedQueue = fcfs(newQueue)
+        totalTime, terminatedQueue = simulador.Simulacion(newQueue, simulador.FirstComeFirstServe, queries)
         calcularEstadisticasSimulacion(terminatedQueue, "FCFS", totalTime)
+        
     case "SJF":
         log.Println("Ejecutando SJF")
-        //sjf(newQueue)
+        totalTime, terminatedQueue = simulador.Simulacion(newQueue, simulador.ShortestJobFirst, queries)
+        calcularEstadisticasSimulacion(terminatedQueue, "SJF", totalTime)
+    case "SJF_PREEMPTIVE":
+        log.Println("Ejecutando SJF con desalojo")
+        totalTime, terminatedQueue = simulador.Simulacion(newQueue, simulador.ShortestJobFirstPreemptive, queries)
+        calcularEstadisticasSimulacion(terminatedQueue, "SJF_PREEMPTIVE", totalTime)
     case "RR":
         log.Println("Ejecutando RR con quantum:", simulacion[len(simulacion)-1].Quantum)
         //rr(newQueue, simulacion[len(simulacion)-1].Quantum)
@@ -415,78 +425,6 @@ func ejecutarSimulacion(w http.ResponseWriter, r *http.Request) {
     //TO-DO: actualizar la tabla simulacion con las estadisticas de la simulacion que se acaba de ejecutar
 
     fmt.Fprintln(w, "Simulación ejecutada")
-}
-func fcfs(newQueue []db.Proceso) (int, []db.Proceso){ //NOTA: los primeros parentesis son los parametros de entrada, los segundos los de salida
-    //Funcion que ejecuta el algoritmo FCFS
-    //Acá recibo la cola new y la voy procesando, miro los arrival time, se simulan los ciclos de reloj, y cuando un proceso llega a su arrival time se cambia su estado a ready
-    clock := 0 //Empiezo el ciclo de reloj en 0
-    //Mientras que haya procesos en new o ready o running o waiting debo seguir simulando. La simulacion termina cuando todos los procesos estan en terminated. 
-    readyQueue := []*db.Proceso{} //Debe ser puntero porque con esto voy a modificar los procesos en la db. 
-    runningProceso := (*db.Proceso)(nil) //Puntero a proceso en estado running, inicialmente nil
-    waitingQueue := []db.Proceso{}
-    terminatedQueue := []db.Proceso{}
-    
-
-
-    //Mientras que haya procesos en new o ready o running o waiting debo seguir simulando. La simulacion termina cuando todos los procesos estan en terminated.
-    for len(newQueue) > 0 || len(readyQueue) > 0 || runningProceso != nil || len(waitingQueue) > 0 {
-        for i := 0; i < len(newQueue); {
-            if newQueue[i].ArrivalTime == int32(clock) {
-                p := newQueue[i]
-                readyQueue = append(readyQueue, &p)
-                newQueue = append(newQueue[:i], newQueue[i+1:]...)
-                continue   // esto es para que no incremente el i, ya que al eliminar un elemento, el siguiente elemento se mueve a la posición actual. 
-            }
-            i++
-        }
-
-
-        //Tomo el primer elemento de la lista de ready y lo paso a running si está disponible para ejecutar
-        if len(readyQueue) > 0 && runningProceso == nil {
-            runningProceso = readyQueue[0]
-            //contextSwitches++
-            runningProceso.Estado = "running"
-            //updateProcesoEstado(readyQueue[0].ID, "running") //actualizo en la DB el estado del proceso
-            readyQueue = readyQueue[1:] //elimino el primer elemento de la lista de ready, la ready queue se volvio la ready queue 
-            // empezando desde el segundo elemento hasta el final por eso 1:. En go la longitud se indica con min:max
-        }
-        // Incremento de waiting time
-        for i := range readyQueue {
-            readyQueue[i].WaitingTime = sql.NullInt32{
-                Int32: readyQueue[i].WaitingTime.Int32 + 1,
-                Valid: true,
-            }
-        }
-        if runningProceso != nil {
-            runningProceso.BurstTime--
-
-            if runningProceso.BurstTime == 0 {
-                //updateProcesoEstado(runningProceso.ID, "terminated") //actualizo en la DB el estado del proceso
-                runningProceso.Estado = "terminated"
-
-                runningProceso.CompletionTime = sql.NullInt32{
-                    Int32: int32(clock),
-                    Valid: true,
-                }
-
-
-                terminatedQueue = append(terminatedQueue, *runningProceso)
-
-                queries.UpdateProcess(context.Background(), db.UpdateProcessParams{
-                    ID:             runningProceso.ID,
-                    WaitingTime:    runningProceso.WaitingTime,
-                    CompletionTime: runningProceso.CompletionTime,
-                    Estado:         "terminated",
-                })
-
-                runningProceso = nil //libero la CPU
-            } 
-        }
-        clock++
-
-    }
-    return clock, terminatedQueue
-
 }
 func OpcionesAlgoritmoHandler(w http.ResponseWriter, r *http.Request) {
     algoritmo := r.URL.Query().Get("algoritmo")
