@@ -15,8 +15,13 @@ func Simulacion(newQueue []db.Proceso, elegir func([]*db.Proceso, *db.Proceso) (
     runningProceso := (*db.Proceso)(nil) //Puntero a proceso en estado running, inicialmente nil
     waitingQueue := []db.Proceso{}
     terminatedQueue := []db.Proceso{}
-    
-    
+
+    ultima, err := queries.GetLastSimulacion(context.Background())
+    if err != nil {
+        // Manejar el error
+    }
+  
+    var currentQuantum int32 = 0
    
 
     //Mientras que haya procesos en new o ready o running o waiting debo seguir simulando. La simulacion termina cuando todos los procesos estan en terminated.
@@ -32,8 +37,8 @@ func Simulacion(newQueue []db.Proceso, elegir func([]*db.Proceso, *db.Proceso) (
         }
 
 		// acá se ejecuta la funcion elegir que me hayan pasado por parámetro, dependiendo el algoritmo va a cambiar.
-		runningProceso, readyQueue = elegir(readyQueue, runningProceso) 
-
+            runningProceso, readyQueue = elegir(readyQueue, runningProceso) 
+      
 
         // Incremento de waiting time
         for i := range readyQueue {
@@ -42,9 +47,13 @@ func Simulacion(newQueue []db.Proceso, elegir func([]*db.Proceso, *db.Proceso) (
                 Valid: true,
             }
         }
-        if runningProceso != nil {
-            runningProceso.BurstTime--
 
+
+        
+        if runningProceso != nil  {
+           
+            runningProceso.BurstTime--
+            currentQuantum++
             if runningProceso.BurstTime == 0 {
                 //updateProcesoEstado(runningProceso.ID, "terminated") //actualizo en la DB el estado del proceso
                 runningProceso.Estado = "terminated"
@@ -65,8 +74,28 @@ func Simulacion(newQueue []db.Proceso, elegir func([]*db.Proceso, *db.Proceso) (
                 })
 
                 runningProceso = nil //libero la CPU
+                currentQuantum = 0
             } 
         }
+
+        if ultima.Quantum.Valid { //ROUND ROBIN 
+            if  (currentQuantum == ultima.Quantum.Int32) {
+                runningProceso.Estado = "ready"
+                readyQueue = append(readyQueue, runningProceso)
+                runningProceso = nil
+                currentQuantum = 0
+                if len(readyQueue) > 0 {
+                    runningProceso = readyQueue[0]
+                    //contextSwitches++
+                    runningProceso.Estado = "running"
+                    //updateProcesoEstado(readyQueue[0].ID, "running") //actualizo en la DB el estado del proceso
+                    readyQueue = readyQueue[1:] //elimino el primer elemento de la lista de ready, la ready queue se volvio la ready queue
+                }
+            }
+        }
+    
+        
+
         clock++
 
     }
@@ -136,7 +165,18 @@ func ShortestJobFirstPreemptive(ready []*db.Proceso, running *db.Proceso) (*db.P
 }
 func RoundRobin(ready []*db.Proceso, running *db.Proceso) (*db.Proceso, []*db.Proceso) {
     //TO-DO
-   return running, ready
+    if running == nil {
+
+        if len(ready) > 0 {
+            running = ready[0]
+            //contextSwitches++
+            running.Estado = "running"
+            //updateProcesoEstado(readyQueue[0].ID, "running") //actualizo en la DB el estado del proceso
+            ready = ready[1:] //elimino el primer elemento de la lista de ready, la ready queue se volvio la ready queue
+        }
+    }
+ 
+    return running, ready
 }
 func buscarProcesoDeMayorPrioridad(ready []*db.Proceso) int {
 	var posMayor int = 0

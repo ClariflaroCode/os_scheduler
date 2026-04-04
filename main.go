@@ -419,7 +419,8 @@ func ejecutarSimulacion(w http.ResponseWriter, r *http.Request) {
         calcularEstadisticasSimulacion(terminatedQueue, "SJF_PREEMPTIVE", totalTime)
     case "RR":
         log.Println("Ejecutando RR con quantum:", simulacion[len(simulacion)-1].Quantum)
-        //rr(newQueue, simulacion[len(simulacion)-1].Quantum)
+        totalTime, terminatedQueue = simulador.Simulacion(newQueue, simulador.RoundRobin, queries)
+        calcularEstadisticasSimulacion(terminatedQueue, "RR", totalTime)
     default:
         http.Error(w, "Algoritmo no soportado", http.StatusBadRequest)
         return
