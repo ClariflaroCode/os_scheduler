@@ -4,25 +4,27 @@ import (
 )
 
 templ EstadisticasView(simulacion db.Simulacion, procesos []db.Proceso) {
-    <section id="estadisticas">
-        <h2>Estadísticas de la Simulación</h2>
-        <section class="estadistica-item">
-            <h3>Tiempo de procesamiento</h3>
-            <p>Aquí se mostrará el tiempo promedio de procesamiento.</p>
-            <p>  { simulacion.AverageTurnaroundTime } </p>
-        </section>
-        <section class="estadistica-item">
-            <h3>Context switches</h3>
-            <p>Aquí se mostrará el número de cambios de contexto durante la simulación.</p>
-            <p>  { simulacion.ContextSwitches } </p>
-        </section>
-        <section class="estadistica-item">
-            <h3>Algoritmo</h3>
-            <p>Aquí se mostrará el algoritmo utilizado durante la simulación.</p>
-            <p>  { simulacion.Algoritmo } </p>
-        </section>
+    <section id="estadisticas" class="card">
+        <h2>Simulación ID: { simulacion.ID }</h2>
 
-        <details > 
+        <ul class="card-footer">
+            <li>Nombre: { simulacion.Nombre }</li>
+            <li>Algoritmo: { simulacion.Algoritmo }</li>
+            if simulacion.Quantum.Valid {
+            <li>Quantum: { simulacion.Quantum.Int32 }</li>
+            }
+            if simulacion.Prioridad.Valid {
+                <li>Prioridad: { simulacion.Prioridad.Int32 }</li>
+            }
+            <li>Tiempo de Proceso: { simulacion.ProcessTime }</li>
+            <li>Tiempo de Despacho: { simulacion.DispatchLatency }</li>
+            <li>Tiempo Promedio de Turnaround: { simulacion.AverageTurnaroundTime }</li>
+            <li>Tiempo Promedio de Waiting time: { simulacion.AverageWaitingTime }</li>
+            <li>Rendimiento Promedio/Throughput: { simulacion.AverageThroughput }</li>
+            <li>Cambios: { simulacion.ContextSwitches }</li>
+                
+        </ul>
+        <details>
             <summary>Haz clic aquí para ver el listado de procesos </summary>
             <div id="listado-procesos">
                 @ListarProcesos(procesos, "")

@@ -2,6 +2,7 @@ package views
 
 import (
     db "scheduler_os/backend/db/sqlc"
+    "strconv"
 )
 templ ListarSimulaciones(simulaciones []db.Simulacion, procesos []db.Proceso) {
     <section id="listado-simulaciones" >
@@ -31,20 +32,21 @@ templ ListarSimulaciones(simulaciones []db.Simulacion, procesos []db.Proceso) {
                             <li>Cambios: { simulacion.ContextSwitches }</li>
                                
                         </ul>
+                        <!--
                         <details> 
 
                             <summary>Ver Listado de procesos</summary>
                             @ListarProcesos(procesos, "")
                         </details>
-                        
-                        <!--<button
+                        -->
+                        <button
                             type="button"
                             hx-get={"/simulaciones/" + strconv.Itoa(int(simulacion.ID))}
                             hx-target="#listado-simulaciones"
                             hx-swap="outerHTML"
                         >
                             Ver Estadísticas
-                        </button> El  hx-swap debe ser delete segun dice la documenacion, usando outerHTML se duplicaba el layout-->
+                        </button> <!--El  hx-swap debe ser delete segun dice la documenacion, usando outerHTML se duplicaba el layout-->
                     </article>
                 }
             }

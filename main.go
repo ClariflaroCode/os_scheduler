@@ -236,35 +236,39 @@ func handleProcesos(w http.ResponseWriter, r *http.Request) {
 func handleSimulaciones(w http.ResponseWriter, r *http.Request) {
 
     path := strings.TrimPrefix(r.URL.Path, "/simulaciones")
-    pathParts := strings.Split(path, "/")
+    path = strings.Trim(path, "/")
 
     switch r.Method {            
     case "GET":
-        if (len(pathParts) == 1 && pathParts[0] != "") {
-            id := pathParts[0]
-            if id != "" {
-                id, err := strconv.Atoi(id)
-                if err != nil {
-                    http.Error(w, "ID inválido", http.StatusBadRequest)
-                    return
-                }
-                
-                var procesos []db.Proceso
-                simulacion, err := queries.GetSimulacion(context.Background(), int32(id))
-                if err != nil {
-                    http.Error(w, "Error al cargar la simulacion", http.StatusInternalServerError)
-                    return
-                }
-                procesos, err = queries.GetProcessesBySimulacion(context.Background(), int32(id))
-                if err != nil {
-                    http.Error(w, "Error al cargar los procesos de la simulacion", http.StatusInternalServerError)
-                    return
-                }
-                views.EstadisticasView(simulacion, procesos).Render(context.Background(), w)
+        if path == "" {
+            log.Println("me saltee el if:")
+
+            MostrarSimulaciones(w, r)
+            return
+        } 
+       
+            id, err := strconv.Atoi(path)
+            if err != nil {
+                http.Error(w, "ID inválido", http.StatusBadRequest)
                 return
             }
-        }
-        MostrarSimulaciones(w, r)
+            
+            var procesos []db.Proceso
+            simulacion, err := queries.GetSimulacion(context.Background(), int32(id))
+            if err != nil {
+                http.Error(w, "Error al cargar la simulacion", http.StatusInternalServerError)
+                return
+            }
+            procesos, err = queries.GetProcessesBySimulacion(context.Background(), int32(id))
+            if err != nil {
+                http.Error(w, "Error al cargar los procesos de la simulacion", http.StatusInternalServerError)
+                return
+            }
+            log.Println("Simulación cargada:", simulacion.ID)
+            views.EstadisticasView(simulacion, procesos).Render(context.Background(), w)
+            return
+        
+    
         return
 
     case "POST":

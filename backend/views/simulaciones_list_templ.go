@@ -10,6 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	db "scheduler_os/backend/db/sqlc"
+	"strconv"
 )
 
 func ListarSimulaciones(simulaciones []db.Simulacion, procesos []db.Proceso) templ.Component {
@@ -51,7 +52,7 @@ func ListarSimulaciones(simulaciones []db.Simulacion, procesos []db.Proceso) tem
 				var templ_7745c5c3_Var2 string
 				templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(simulacion.ID)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `backend/views/simulaciones_list.templ`, Line: 15, Col: 59}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `backend/views/simulaciones_list.templ`, Line: 16, Col: 59}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 				if templ_7745c5c3_Err != nil {
@@ -64,7 +65,7 @@ func ListarSimulaciones(simulaciones []db.Simulacion, procesos []db.Proceso) tem
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(simulacion.Nombre)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `backend/views/simulaciones_list.templ`, Line: 18, Col: 59}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `backend/views/simulaciones_list.templ`, Line: 19, Col: 59}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -77,7 +78,7 @@ func ListarSimulaciones(simulaciones []db.Simulacion, procesos []db.Proceso) tem
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(simulacion.Algoritmo)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `backend/views/simulaciones_list.templ`, Line: 19, Col: 65}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `backend/views/simulaciones_list.templ`, Line: 20, Col: 65}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -95,7 +96,7 @@ func ListarSimulaciones(simulaciones []db.Simulacion, procesos []db.Proceso) tem
 					var templ_7745c5c3_Var5 string
 					templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(simulacion.Quantum.Int32)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `backend/views/simulaciones_list.templ`, Line: 21, Col: 67}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `backend/views/simulaciones_list.templ`, Line: 22, Col: 67}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 					if templ_7745c5c3_Err != nil {
@@ -114,7 +115,7 @@ func ListarSimulaciones(simulaciones []db.Simulacion, procesos []db.Proceso) tem
 					var templ_7745c5c3_Var6 string
 					templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(simulacion.Prioridad.Int32)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `backend/views/simulaciones_list.templ`, Line: 24, Col: 75}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `backend/views/simulaciones_list.templ`, Line: 25, Col: 75}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 					if templ_7745c5c3_Err != nil {
@@ -132,7 +133,7 @@ func ListarSimulaciones(simulaciones []db.Simulacion, procesos []db.Proceso) tem
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(simulacion.ProcessTime)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `backend/views/simulaciones_list.templ`, Line: 26, Col: 75}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `backend/views/simulaciones_list.templ`, Line: 27, Col: 75}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {
@@ -145,7 +146,7 @@ func ListarSimulaciones(simulaciones []db.Simulacion, procesos []db.Proceso) tem
 				var templ_7745c5c3_Var8 string
 				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(simulacion.DispatchLatency)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `backend/views/simulaciones_list.templ`, Line: 27, Col: 80}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `backend/views/simulaciones_list.templ`, Line: 28, Col: 80}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
@@ -158,7 +159,7 @@ func ListarSimulaciones(simulaciones []db.Simulacion, procesos []db.Proceso) tem
 				var templ_7745c5c3_Var9 string
 				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(simulacion.AverageTurnaroundTime)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `backend/views/simulaciones_list.templ`, Line: 28, Col: 97}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `backend/views/simulaciones_list.templ`, Line: 29, Col: 97}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 				if templ_7745c5c3_Err != nil {
@@ -171,7 +172,7 @@ func ListarSimulaciones(simulaciones []db.Simulacion, procesos []db.Proceso) tem
 				var templ_7745c5c3_Var10 string
 				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(simulacion.AverageWaitingTime)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `backend/views/simulaciones_list.templ`, Line: 29, Col: 96}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `backend/views/simulaciones_list.templ`, Line: 30, Col: 96}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 				if templ_7745c5c3_Err != nil {
@@ -184,7 +185,7 @@ func ListarSimulaciones(simulaciones []db.Simulacion, procesos []db.Proceso) tem
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(simulacion.AverageThroughput)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `backend/views/simulaciones_list.templ`, Line: 30, Col: 95}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `backend/views/simulaciones_list.templ`, Line: 31, Col: 95}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 				if templ_7745c5c3_Err != nil {
@@ -197,21 +198,26 @@ func ListarSimulaciones(simulaciones []db.Simulacion, procesos []db.Proceso) tem
 				var templ_7745c5c3_Var12 string
 				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(simulacion.ContextSwitches)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `backend/views/simulaciones_list.templ`, Line: 31, Col: 69}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `backend/views/simulaciones_list.templ`, Line: 32, Col: 69}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</li></ul><details><summary>Ver Listado de procesos</summary>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</li></ul><!--\n                        <details> \n\n                            <summary>Ver Listado de procesos</summary>\n                            @ListarProcesos(procesos, \"\")\n                        </details>\n                        --><button type=\"button\" hx-get=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = ListarProcesos(procesos, "").Render(ctx, templ_7745c5c3_Buffer)
+				var templ_7745c5c3_Var13 string
+				templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs("/simulaciones/" + strconv.Itoa(int(simulacion.ID)))
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `backend/views/simulaciones_list.templ`, Line: 44, Col: 87}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</details><!--<button\n                            type=\"button\"\n                            hx-get={\"/simulaciones/\" + strconv.Itoa(int(simulacion.ID))}\n                            hx-target=\"#listado-simulaciones\"\n                            hx-swap=\"outerHTML\"\n                        >\n                            Ver Estadísticas\n                        </button> El  hx-swap debe ser delete segun dice la documenacion, usando outerHTML se duplicaba el layout--></article>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" hx-target=\"#listado-simulaciones\" hx-swap=\"outerHTML\">Ver Estadísticas</button><!--El  hx-swap debe ser delete segun dice la documenacion, usando outerHTML se duplicaba el layout--></article>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

@@ -134,9 +134,9 @@ func ShortestJobFirstPreemptive(ready []*db.Proceso, running *db.Proceso) (*db.P
     }
     return running, ready
 }
-func RoundRobin(ready []*db.Proceso, running *db.Proceso, quantum int) (*db.Proceso, []*db.Proceso) {
+func RoundRobin(ready []*db.Proceso, running *db.Proceso) (*db.Proceso, []*db.Proceso) {
     //TO-DO
-    return running, ready
+   return running, ready
 }
 func buscarProcesoDeMayorPrioridad(ready []*db.Proceso) int {
 	var posMayor int = 0
